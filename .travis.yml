@@ -1,16 +1,32 @@
-language: generic
+language: python
+python:
+  - "2.7"
+  - "3.3"
 
-services:
-  - docker
+before_install:
+  # Install Anaconda, which we will use to install scipy and other
+  # python dependencies:
+  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b
+  - export PATH=/home/travis/miniconda/bin:$PATH
+  - conda update --yes conda
+  # Fix a crash with multiprocessing on Travis and are not specific to
+  # using Miniconda:
+  - sudo rm -rf /dev/shm
+  - sudo ln -s /run/shm /dev/shm
 
 install:
-  - docker pull chriscummins/phd_build:latest
-  - chmod -R 777 $TRAVIS_BUILD_DIR
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib nose dateutil pandas statsmodels
+  # Coverage packages are on a binstar channel:
+  - conda install --yes -c dan_blanchard python-coveralls nose-cov
+  # Install support for coveralls.io:
+  - pip install coveralls coverage
+  - python setup.py install
 
 script:
-  - docker run -v$TRAVIS_BUILD_DIR:/phd chriscummins/phd_build:latest -c "./configure --noninteractive && ./tools/flaky_bazel.sh test --config=travis //tools/format/..."
+  - coverage run --source=srtime setup.py test
 
-notifications:
-  email:
-    on_success: never
-    on_failure: change
+after_success:
+  # Create coverage report:
+  - coveralls
