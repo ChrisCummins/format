@@ -274,6 +274,7 @@ def AutoCompletePrefix(prefix: str, trie: nx.DiGraph) -> typing.Set[str]:
 
 
 def CamelCapsToUnderscoreSeparated(camel_caps_str: str):
+<<<<<<< HEAD:labm8/py/text.py
 <<<<<<< HEAD
 <<<<<<< HEAD:labm8/py/text.py
   components = re.findall("[A-Z][^A-Z]*", camel_caps_str)
@@ -336,3 +337,8 @@ def StripSingleLineComments(
   lines = [comment_re.sub("", line) for line in string.split("\n")]
   return "\n".join(lines)
 >>>>>>> 4242aed2a... Automated code format.
+=======
+  components = re.findall('[A-Z][^A-Z]*', camel_caps_str)
+  assert components
+  return '_'.join(x.lower() for x in components)
+>>>>>>> 13a6740d9... Restructure static features and add dynamic.:labm8/text.py
