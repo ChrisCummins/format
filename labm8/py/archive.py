@@ -15,11 +15,16 @@ from absl import flags
 from labm8 import app
 >>>>>>> 89b790ba9... Merge absl logging, app, and flags modules.:labm8/archive.py
 
+<<<<<<< HEAD:labm8/py/archive.py
 FLAGS = app.FLAGS
 
 >>>>>>> 105797fd4... Auto format files.:labm8/archive.py
 =======
 >>>>>>> d97a0b31a... Populate BuildInfo protobuf during build stamping.:labm8/archive.py
+=======
+FLAGS = flags.FLAGS
+
+>>>>>>> 105797fd4... Auto format files.:labm8/archive.py
 
 class UnsupportedArchiveFormat(ValueError):
   """Raised in case an archive has an unsupported file format."""
@@ -43,6 +48,7 @@ class Archive(object):
   """
 
   def __init__(
+<<<<<<< HEAD:labm8/py/archive.py
 <<<<<<< HEAD
 <<<<<<< HEAD:labm8/py/archive.py
     self,
@@ -64,6 +70,11 @@ class Archive(object):
 >>>>>>> 4242aed2a... Automated code format.
   ):
 >>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/archive.py
+=======
+      self,
+      path: typing.Union[str, pathlib.Path],
+      assume_filename: typing.Optional[typing.Union[str, pathlib.Path]] = None):
+>>>>>>> 105797fd4... Auto format files.:labm8/archive.py
     """Create an archive.
 
     Will determine the type of the archive from the suffix, e.g. if path is
