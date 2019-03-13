@@ -10,6 +10,12 @@ py_library(
     name = "aspy_refactor_imports",
     srcs = ["//third_party/py:empty.py"],
     deps = [
+<<<<<<< HEAD:third_party/py/aspy_refactor_imports/BUILD
         requirement("aspy.refactor-imports"),
+=======
+        requirement("Flask"),
+        requirement("flask-cors"),
+        requirement("Werkzeug"),
+>>>>>>> 0aae7e3cf... Make implicit dep explicit.:third_party/py/flask/BUILD
     ],
 )
