@@ -14,6 +14,7 @@ py_library(
         requirement("cached-property"),
 =======
         requirement("Flask"),
+        requirement("Flask-Compress"),
         requirement("flask-cors"),
         requirement("Werkzeug"),
 >>>>>>> 0aae7e3cf... Make implicit dep explicit.:third_party/py/flask/BUILD
