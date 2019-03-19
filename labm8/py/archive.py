@@ -10,6 +10,7 @@ import zipfile
 <<<<<<< HEAD:labm8/py/archive.py
 <<<<<<< HEAD:labm8/py/archive.py
 <<<<<<< HEAD:labm8/py/archive.py
+<<<<<<< HEAD:labm8/py/archive.py
 =======
 from absl import flags
 =======
@@ -31,6 +32,8 @@ FLAGS = app.FLAGS
 >>>>>>> 89b790ba9... Merge absl logging, app, and flags modules.:labm8/archive.py
 
 >>>>>>> 105797fd4... Auto format files.:labm8/archive.py
+=======
+>>>>>>> d97a0b31a... Populate BuildInfo protobuf during build stamping.:labm8/archive.py
 
 class UnsupportedArchiveFormat(ValueError):
   """Raised in case an archive has an unsupported file format."""
