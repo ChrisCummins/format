@@ -17,6 +17,17 @@ py_library(
         requirement("Flask-Compress"),
         requirement("flask-cors"),
         requirement("Werkzeug"),
+<<<<<<< HEAD:third_party/py/cached_property/BUILD
 >>>>>>> 0aae7e3cf... Make implicit dep explicit.:third_party/py/flask/BUILD
+=======
+        requirement("jinja2"),
+        requirement("Click"),
+        requirement("itsdangerous"),
+        requirement("requests"),
+        requirement("urllib3"),
+        requirement("chardet"),
+        requirement("certifi"),
+        requirement("retrying"),
+>>>>>>> fa2dbdcdb... Move implicit deps into correct package.:third_party/py/flask/BUILD
     ],
 )
