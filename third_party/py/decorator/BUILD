@@ -15,6 +15,12 @@ py_library(
 =======
         requirement("jupyter-client"),
         requirement("jupyter_http_over_ws"),
+<<<<<<< HEAD:third_party/py/decorator/BUILD
 >>>>>>> 791b827d0... Enable support for Colaboratory notebooks.:third_party/py/jupyter/BUILD
+=======
+        requirement("notebook"),
+        requirement("nbformat"),
+        requirement("prometheus_client"),
+>>>>>>> c676bc140... Add docker image to build notebook.:third_party/py/jupyter/BUILD
     ],
 )
