@@ -11,8 +11,12 @@ py_library(
     srcs = ["//third_party/py:empty.py"],
     deps = [
 <<<<<<< HEAD:third_party/py/cached_property/BUILD
+<<<<<<< HEAD:third_party/py/cached_property/BUILD
         requirement("cached-property"),
 =======
+=======
+        "//third_party/py/requests",
+>>>>>>> 9ef956645... Add explicit requests dependency.:third_party/py/flask/BUILD
         requirement("Flask"),
         requirement("Flask-Compress"),
         requirement("flask-cors"),
@@ -23,7 +27,6 @@ py_library(
         requirement("jinja2"),
         requirement("Click"),
         requirement("itsdangerous"),
-        requirement("requests"),
         requirement("urllib3"),
         requirement("chardet"),
         requirement("certifi"),
