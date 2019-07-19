@@ -237,6 +237,7 @@ class Workspace(object):
       return RelpathIfExists(fully_qualified_target[2:].replace(":", "/"))
     else:
       raise ValueError(
+<<<<<<< HEAD:labm8/py/bazelutil.py
         "Target is not fully qualified (does not begin with `//`): "
         f"{fully_qualified_target}",
       )
@@ -248,6 +249,14 @@ class Workspace(object):
 =======
   def GetDependentFiles(self, target: str) -> typing.List[pathlib.Path]:
 >>>>>>> a4e1bff54... Auto-format code.:labm8/bazelutil.py
+=======
+          'Target is not fully qualified (does not begin with `//`): '
+          f'{fully_qualified_target}')
+
+  def GetDependentFiles(
+      self, target: str,
+      excluded_targets: typing.Iterable[str]) -> typing.List[pathlib.Path]:
+>>>>>>> cf0d9248e... Add support for excluded targets.:labm8/bazelutil.py
     """Get the file dependencies of the target.
 
     Args:
@@ -273,6 +282,7 @@ class Workspace(object):
       raise OSError("bazel query failed")
     if grep.returncode:
       raise OSError("grep of bazel query output failed")
+<<<<<<< HEAD:labm8/py/bazelutil.py
     targets = stdout.rstrip().split("\n")
 
     # Now get the transitive dependencies of each target.
@@ -306,6 +316,15 @@ class Workspace(object):
       ]
 
     paths = [self.MaybeTargetToPath(target) for target in all_targets]
+=======
+
+    targets = stdout.rstrip().split('\n')
+    paths = [
+        self.MaybeTargetToPath(target)
+        for target in targets
+        if target not in excluded_targets
+    ]
+>>>>>>> cf0d9248e... Add support for excluded targets.:labm8/bazelutil.py
     return [path for path in paths if path]
 
   def GetBuildFiles(self, target: str) -> typing.List[pathlib.Path]:
