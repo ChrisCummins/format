@@ -43,7 +43,12 @@ def FindRunfilesDirectory() -> typing.Optional[pathlib.Path]:
 
 
 def DataPath(
+<<<<<<< HEAD:labm8/py/bazelutil.py
   path: typing.Union[str, pathlib.Path], must_exist: bool = True,
+=======
+    path: typing.Union[str, pathlib.Path],
+    must_exist: bool = True,
+>>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/bazelutil.py
 ) -> pathlib.Path:
   """Return the absolute path to a data file.
 
@@ -152,8 +157,13 @@ class Workspace(object):
       OSError: If the root is not a workspace.
     """
     self._root = root
+<<<<<<< HEAD:labm8/py/bazelutil.py
     if not (self._root / "WORKSPACE").is_file():
       raise OSError(f"`{self._root}/WORKSPACE` not found")
+=======
+    if not (self._root / 'WORKSPACE').is_file():
+      raise OSError(f'`{self._root}/WORKSPACE` not found')
+>>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/bazelutil.py
 
   @property
   def workspace_root(self) -> pathlib.Path:
@@ -230,14 +240,24 @@ class Workspace(object):
            str(timeout_seconds), 'bazel', 'query'] + args, **subprocess_kwargs)
 =======
       return subprocess.Popen([
-          'timeout', '-s9',
-          str(timeout_seconds), 'bazel', command, '--noshow_progress'
+          'timeout',
+          '-s9',
+          str(timeout_seconds),
+          'bazel',
+          command,
+          '--noshow_progress',
       ] + args, **subprocess_kwargs)
 >>>>>>> c22954d10... Don't show progress in bazel query.:labm8/bazelutil.py
 
   def MaybeTargetToPath(
+<<<<<<< HEAD:labm8/py/bazelutil.py
       self, fully_qualified_target: str) -> typing.Optional[pathlib.Path]:
 >>>>>>> a4e1bff54... Auto-format code.:labm8/bazelutil.py
+=======
+      self,
+      fully_qualified_target: str,
+  ) -> typing.Optional[pathlib.Path]:
+>>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/bazelutil.py
     """Determine if a bazel target refers to a file, and if so return the path.
 
     Args:
@@ -275,12 +295,19 @@ class Workspace(object):
 >>>>>>> a4e1bff54... Auto-format code.:labm8/bazelutil.py
 =======
           'Target is not fully qualified (does not begin with `//`): '
-          f'{fully_qualified_target}')
+          f'{fully_qualified_target}',)
 
   def GetDependentFiles(
+<<<<<<< HEAD:labm8/py/bazelutil.py
       self, target: str,
       excluded_targets: typing.Iterable[str]) -> typing.List[pathlib.Path]:
 >>>>>>> cf0d9248e... Add support for excluded targets.:labm8/bazelutil.py
+=======
+      self,
+      target: str,
+      excluded_targets: typing.Iterable[str],
+  ) -> typing.List[pathlib.Path]:
+>>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/bazelutil.py
     """Get the file dependencies of the target.
 
     Args:
@@ -295,6 +322,7 @@ class Workspace(object):
     # First run through bazel query to expand globs.
     bazel = self.BazelQuery([target], stdout=subprocess.PIPE)
 <<<<<<< HEAD:labm8/py/bazelutil.py
+<<<<<<< HEAD:labm8/py/bazelutil.py
     grep = subprocess.Popen(
       ["grep", "^/"],
       stdout=subprocess.PIPE,
@@ -307,11 +335,20 @@ class Workspace(object):
                             stdin=bazel.stdout,
                             universal_newlines=True)
 >>>>>>> 6d5f13a15... Resolve dependencies for each target in turn.:labm8/bazelutil.py
+=======
+    grep = subprocess.Popen(
+        ['grep', '^/'],
+        stdout=subprocess.PIPE,
+        stdin=bazel.stdout,
+        universal_newlines=True,
+    )
+>>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/bazelutil.py
 
     stdout, _ = grep.communicate()
     if bazel.returncode:
-      raise OSError("bazel query failed")
+      raise OSError('bazel query failed')
     if grep.returncode:
+<<<<<<< HEAD:labm8/py/bazelutil.py
       raise OSError("grep of bazel query output failed")
 <<<<<<< HEAD:labm8/py/bazelutil.py
 <<<<<<< HEAD:labm8/py/bazelutil.py
@@ -360,6 +397,9 @@ class Workspace(object):
 >>>>>>> cf0d9248e... Add support for excluded targets.:labm8/bazelutil.py
 =======
 =======
+=======
+      raise OSError('grep of bazel query output failed')
+>>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/bazelutil.py
     targets = stdout.rstrip().split('\n')
 
     # Now get the transitive dependencies of each target.
@@ -367,16 +407,18 @@ class Workspace(object):
     targets = [target for target in targets if target not in excluded_targets]
     for target in targets:
       bazel = self.BazelQuery([f'deps({target})'], stdout=subprocess.PIPE)
-      grep = subprocess.Popen(['grep', '^/'],
-                              stdout=subprocess.PIPE,
-                              stdin=bazel.stdout,
-                              universal_newlines=True)
+      grep = subprocess.Popen(
+          ['grep', '^/'],
+          stdout=subprocess.PIPE,
+          stdin=bazel.stdout,
+          universal_newlines=True,
+      )
 
       stdout, _ = grep.communicate()
       if bazel.returncode:
-        raise OSError("bazel query failed")
+        raise OSError('bazel query failed')
       if grep.returncode:
-        raise OSError("grep of bazel query output failed")
+        raise OSError('grep of bazel query output failed')
 
       deps = stdout.rstrip().split('\n')
       targets += [target for target in deps if target not in excluded_targets]
@@ -392,6 +434,7 @@ class Workspace(object):
       OSError: If bazel query fails.
     """
     bazel = self.BazelQuery(
+<<<<<<< HEAD:labm8/py/bazelutil.py
       [f"buildfiles(deps({target}))"], stdout=subprocess.PIPE,
     )
     cut = subprocess.Popen(
@@ -402,15 +445,30 @@ class Workspace(object):
       stdout=subprocess.PIPE,
       stdin=cut.stdout,
       universal_newlines=True,
+=======
+        [f'buildfiles(deps({target}))'],
+        stdout=subprocess.PIPE,
+    )
+    cut = subprocess.Popen(
+        ['cut', '-f1', '-d:'],
+        stdout=subprocess.PIPE,
+        stdin=bazel.stdout,
+    )
+    grep = subprocess.Popen(
+        ['grep', '^/'],
+        stdout=subprocess.PIPE,
+        stdin=cut.stdout,
+        universal_newlines=True,
+>>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/bazelutil.py
     )
 
     stdout, _ = grep.communicate()
     if bazel.returncode:
-      raise OSError("bazel query failed")
+      raise OSError('bazel query failed')
     if cut.returncode:
-      raise OSError("bazel query output cut failed")
+      raise OSError('bazel query output cut failed')
     if grep.returncode:
-      raise OSError("bazel query output search failed")
+      raise OSError('bazel query output search failed')
 
     for line in stdout.rstrip().split("\n"):
       if line == "//external":
