@@ -302,8 +302,10 @@ def StripSingleLineComments(
 =======
 
 
-def StripSingleLineComments(string: str,
-                            start_comment_re: str = '(#|//)') -> str:
+def StripSingleLineComments(
+    string: str,
+    start_comment_re: str = '(#|//)',
+) -> str:
   """Strip line comments from a string.
 
   Args:
