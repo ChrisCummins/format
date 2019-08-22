@@ -20,6 +20,7 @@ py_library(
         requirement("Flask"),
         requirement("Flask-Compress"),
         requirement("flask-cors"),
+        requirement("Flask-SQLalchemy"),
         requirement("Werkzeug"),
 <<<<<<< HEAD:third_party/py/cached_property/BUILD
 >>>>>>> 0aae7e3cf... Make implicit dep explicit.:third_party/py/flask/BUILD
