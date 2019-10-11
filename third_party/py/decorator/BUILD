@@ -20,7 +20,12 @@ py_library(
 =======
         requirement("notebook"),
         requirement("nbformat"),
+        # requirement("nbconvert"),
         requirement("prometheus_client"),
+<<<<<<< HEAD:third_party/py/decorator/BUILD
 >>>>>>> c676bc140... Add docker image to build notebook.:third_party/py/jupyter/BUILD
+=======
+        "//third_party/py/jinja2",
+>>>>>>> 575a2237e... Add implicit deps to jupyter package.:third_party/py/jupyter/BUILD
     ],
 )
