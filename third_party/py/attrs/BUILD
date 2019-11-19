@@ -7,7 +7,11 @@ package(default_visibility = ["//visibility:public"])
 licenses(["notice"])  # BSD
 
 py_library(
+<<<<<<< HEAD:third_party/py/attrs/BUILD
     name = "attrs",
+=======
+    name = "jupyter",
+>>>>>>> 10d0bba21... Remove the empty python library files.:third_party/py/jupyter/BUILD
     srcs = ["//third_party/py:empty.py"],
     deps = [
 <<<<<<< HEAD:third_party/py/attrs/BUILD
@@ -20,7 +24,6 @@ py_library(
 =======
         requirement("notebook"),
         requirement("nbformat"),
-        # requirement("nbconvert"),
         requirement("prometheus_client"),
 <<<<<<< HEAD:third_party/py/attrs/BUILD
 >>>>>>> c676bc140... Add docker image to build notebook.:third_party/py/jupyter/BUILD
