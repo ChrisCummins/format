@@ -7,7 +7,11 @@ package(default_visibility = ["//visibility:public"])
 licenses(["notice"])  # BSD
 
 py_library(
+<<<<<<< HEAD:third_party/py/aspy_refactor_imports/BUILD
     name = "aspy_refactor_imports",
+=======
+    name = "flask",
+>>>>>>> 10d0bba21... Remove the empty python library files.:third_party/py/flask/BUILD
     srcs = ["//third_party/py:empty.py"],
     deps = [
 <<<<<<< HEAD:third_party/py/aspy_refactor_imports/BUILD
