@@ -9,7 +9,7 @@ macos: brew install clang-format
 <<<<<<< HEAD:tools/format/DEPS.txt
 =======
 # For linting Python files.
-all: python -m pip install 'yapf==0.28.0'
+all: python -m pip install 'black-2spaces'
 all: python -m pip install reorder-python-imports
 # For linting SQL files.
 <<<<<<< HEAD:tools/format/DEPS.txt
