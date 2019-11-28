@@ -68,6 +68,7 @@ from typing import Union
 <<<<<<< HEAD:labm8/py/humanize.py
 import humanize as humanize_lib
 
+<<<<<<< HEAD
 <<<<<<< HEAD:labm8/py/humanize.py
 SIBILANT_ENDINGS = frozenset(["sh", "ss", "tch", "ax", "ix", "ex"])
 DIGIT_SPLITTER = re.compile(r"\d+|\D+").findall
@@ -85,6 +86,10 @@ FLAGS = app.FLAGS
 SIBILANT_ENDINGS = frozenset(['sh', 'ss', 'tch', 'ax', 'ix', 'ex'])
 DIGIT_SPLITTER = re.compile(r'\d+|\D+').findall
 >>>>>>> 89b790ba9... Merge absl logging, app, and flags modules.:labm8/humanize.py
+=======
+SIBILANT_ENDINGS = frozenset(["sh", "ss", "tch", "ax", "ix", "ex"])
+DIGIT_SPLITTER = re.compile(r"\d+|\D+").findall
+>>>>>>> 4242aed2a... Automated code format.
 
 # These are included because they are common technical terms.
 SPECIAL_PLURALS = {
@@ -106,11 +111,15 @@ def Commas(value: Optional[int]):
     A string.
   """
   if value is None:
+<<<<<<< HEAD
 <<<<<<< HEAD:labm8/py/humanize.py
     return "0"
 =======
     return '0'
 >>>>>>> dd3ef9301... allow Commas(None).:labm8/humanize.py
+=======
+    return "0"
+>>>>>>> 4242aed2a... Automated code format.
   if value < 0:
     sign = "-"
     value = -value
@@ -136,15 +145,21 @@ def Plural(quantity, singular, plural=None, commas=False):
   Returns:
     A string.
   """
+<<<<<<< HEAD
 <<<<<<< HEAD:labm8/py/humanize.py
+=======
+>>>>>>> 4242aed2a... Automated code format.
   return "%s %s" % (
     Commas(quantity) if quantity else quantity,
     PluralWord(quantity, singular, plural),
   )
+<<<<<<< HEAD
 =======
   return '%s %s' % (Commas(quantity) if quantity else quantity,
                     PluralWord(quantity, singular, plural))
 >>>>>>> 750c12b5c... Add a commas option to humanize.Plural().:labm8/humanize.py
+=======
+>>>>>>> 4242aed2a... Automated code format.
 
 
 def PluralWord(quantity, singular, plural=None):
@@ -222,6 +237,7 @@ def AddIndefiniteArticle(noun):
     return "a " + noun
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD:labm8/py/humanize.py
 def DecimalPrefix(
   quantity, unit, precision=1, min_scale=0, max_scale=None, separator=" "
@@ -234,6 +250,11 @@ def DecimalPrefix(quantity,
                   max_scale=None,
                   separator=' '):
 >>>>>>> 8d2c9ddfa... Add a separator argument.:labm8/humanize.py
+=======
+def DecimalPrefix(
+  quantity, unit, precision=1, min_scale=0, max_scale=None, separator=" "
+):
+>>>>>>> 4242aed2a... Automated code format.
   """Formats an integer and a unit into a string, using decimal prefixes.
 
   The unit will be prefixed with an appropriate multiplier such that
@@ -285,22 +306,26 @@ def DecimalPrefix(quantity,
 >>>>>>> bb562b8d7... Refresh labm8 for new deps.:labm8/humanize.py
 =======
   return _Prefix(
-      quantity,
-      unit,
-      precision,
-      separator,
-      DecimalScale,
-      min_scale=min_scale,
-      max_scale=max_scale,
+    quantity,
+    unit,
+    precision,
+    separator,
+    DecimalScale,
+    min_scale=min_scale,
+    max_scale=max_scale,
   )
 >>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/humanize.py
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD:labm8/py/humanize.py
 def BinaryPrefix(quantity, unit, precision=1, separator=" "):
 =======
 def BinaryPrefix(quantity, unit, precision=1, separator=' '):
 >>>>>>> 8d2c9ddfa... Add a separator argument.:labm8/humanize.py
+=======
+def BinaryPrefix(quantity, unit, precision=1, separator=" "):
+>>>>>>> 4242aed2a... Automated code format.
   """Formats an integer and a unit into a string, using binary prefixes.
 
   The unit will be prefixed with an appropriate multiplier such that
@@ -353,6 +378,7 @@ def _Prefix(quantity, unit, precision, separator, scale_callable, **args):
   if scaled_unit:
     separator = " "
 
+<<<<<<< HEAD
 <<<<<<< HEAD:labm8/py/humanize.py
   print_pattern = "%%.%df%%s%%s" % max(
     0, (precision - int(math.log(abs(scaled_quantity), 10)) - 1),
@@ -361,6 +387,10 @@ def _Prefix(quantity, unit, precision, separator, scale_callable, **args):
       0,
       (precision - int(math.log(abs(scaled_quantity), 10)) - 1),
 >>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/humanize.py
+=======
+  print_pattern = "%%.%df%%s%%s" % max(
+    0, (precision - int(math.log(abs(scaled_quantity), 10)) - 1),
+>>>>>>> 4242aed2a... Automated code format.
   )
 
   string = print_pattern % (scaled_quantity, separator, scaled_unit)
@@ -369,7 +399,10 @@ def _Prefix(quantity, unit, precision, separator, scale_callable, **args):
 
 # Prefixes and corresponding min_scale and max_scale for decimal formating.
 DECIMAL_PREFIXES = (
+<<<<<<< HEAD
 <<<<<<< HEAD:labm8/py/humanize.py
+=======
+>>>>>>> 4242aed2a... Automated code format.
   "y",
   "z",
   "a",
@@ -387,6 +420,7 @@ DECIMAL_PREFIXES = (
   "E",
   "Z",
   "Y",
+<<<<<<< HEAD
 =======
     'y',
     'z',
@@ -406,6 +440,8 @@ DECIMAL_PREFIXES = (
     'Z',
     'Y',
 >>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/humanize.py
+=======
+>>>>>>> 4242aed2a... Automated code format.
 )
 DECIMAL_MIN_SCALE = -8
 DECIMAL_MAX_SCALE = 8
@@ -451,6 +487,7 @@ def BinaryScale(quantity, unit):
     units (string).
   """
   return _Scale(
+<<<<<<< HEAD
 <<<<<<< HEAD:labm8/py/humanize.py
     quantity, unit, 1024, ("Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"),
 =======
@@ -459,6 +496,9 @@ def BinaryScale(quantity, unit):
       1024,
       ('Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi', 'Yi'),
 >>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/humanize.py
+=======
+    quantity, unit, 1024, ("Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"),
+>>>>>>> 4242aed2a... Automated code format.
   )
 
 
@@ -578,6 +618,7 @@ def Duration(duration, separator=" "):
       else:
         return "<1ns"
     elif duration > 1:
+<<<<<<< HEAD
 <<<<<<< HEAD:labm8/py/humanize.py
       if unit != "s":
         # Append sub-second component to string.
@@ -587,6 +628,11 @@ def Duration(duration, separator=" "):
         # Append sub-second component to string.
         delta_str += f' {int(value)}{unit}'
 >>>>>>> 5b03fc7d7... Fix for float time.:labm8/humanize.py
+=======
+      if unit != "s":
+        # Append sub-second component to string.
+        delta_str += f" {int(value)}{unit}"
+>>>>>>> 4242aed2a... Automated code format.
     else:
       return f"{int(value)}{unit}"
   return delta_str
@@ -608,11 +654,15 @@ def LowPrecisionDuration(duration: Union[datetime.timedelta, int, float]):
   return humanize_lib.naturaldelta(duration)
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD:labm8/py/humanize.py
 def TimeDelta(delta, separator=" "):
 =======
 def TimeDelta(delta, separator=' '):
 >>>>>>> 505ade885... Humanize tidy up.:labm8/humanize.py
+=======
+def TimeDelta(delta, separator=" "):
+>>>>>>> 4242aed2a... Automated code format.
   """Format a datetime.timedelta into a human-readable string.
 
   Args:
@@ -688,7 +738,7 @@ def NaturalSortKey(data):
       segments[i] = _StrComparableInt(int(value))
     else:
       segments[i] = _StrComparableInt(value)
-  print('SEGMENTS', segments)
+  print("SEGMENTS", segments)
   return segments
 
 
