@@ -8,10 +8,14 @@ linux: sudo apt install -y --no-install-recommends clang-format
 macos: brew install clang-format
 # For linting Python files.
 <<<<<<< HEAD:tools/format/DEPS.txt
+<<<<<<< HEAD:tools/format/DEPS.txt
 all: python3 -m pip install 'black-2spaces'
 all: python3 -m pip install reorder-python-imports
 =======
 all: python -m pip install 'yapf==0.28.0'
+=======
+all: python -m pip install 'black-2spaces'
+>>>>>>> 2bcd724d2... Replace yapf with my forked version of black.:tools/code_style/linters/DEPS.txt
 all: python -m pip install reorder-python-imports
 # For linting SQL files.
 all: python -m pip install sqlparse
