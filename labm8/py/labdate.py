@@ -18,25 +18,12 @@ Using the methods defined in this file to create and convert dates ensures
 equivalency when converting between timestamp and datetime formats.
 """
 import datetime
-<<<<<<< HEAD:labm8/py/labdate.py
 import typing
 
 import pytz
 
 UTC = pytz.UTC
-US_PACIFIC = pytz.timezone("US/Pacific")
-<<<<<<< HEAD
-
-=======
->>>>>>> 5feb1d004... Replace third party humanize with own module.:labm8/labdate.py
-import typing
-
-import pytz
-
-UTC = pytz.UTC
-US_PACIFIC = pytz.timezone("US/Pacific")
-=======
->>>>>>> 4242aed2a... Automated code format.
+US_PACIFIC = pytz.timezone('US/Pacific')
 
 
 def GetUtcMillisecondsNow() -> datetime.datetime:
@@ -54,35 +41,8 @@ def GetUtcMillisecondsNow() -> datetime.datetime:
   return d.replace(microsecond=int(d.microsecond / 1000) * 1000)
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD:labm8/py/labdate.py
-<<<<<<< HEAD
-<<<<<<< HEAD:labm8/py/labdate.py
-def MillisecondsTimestamp(
-<<<<<<< HEAD:labm8/py/labdate.py
-  date: typing.Optional[datetime.datetime] = None,
-) -> int:
-=======
-    date: typing.Optional[datetime.datetime] = None) -> int:
->>>>>>> ac86e24fa... Fix type hint for optional parameter.:lib/labm8/labdate.py
-=======
 def MillisecondsTimestamp(date: typing.Optional[datetime.datetime] = None,
                          ) -> int:
->>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/labdate.py
-=======
-def MillisecondsTimestamp(
-  date: typing.Optional[datetime.datetime] = None,
-) -> int:
->>>>>>> 4242aed2a... Automated code format.
-=======
-def MillisecondsTimestamp(date: typing.Optional[datetime.datetime] = None,
-                         ) -> int:
->>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/labdate.py
-=======
-def MillisecondsTimestamp(
-  date: typing.Optional[datetime.datetime] = None,
-) -> int:
->>>>>>> 4242aed2a... Automated code format.
   """Get the millisecond timestamp of a date.
 
   Args:
@@ -96,39 +56,12 @@ def MillisecondsTimestamp(
   """
   date = date or GetUtcMillisecondsNow()
   if not isinstance(date, datetime.datetime):
-    raise TypeError("Date must be a datetime instance")
-  return int(date.strftime("%s%f")[:-3])
+    raise TypeError('Date must be a datetime instance')
+  return int(date.strftime('%s%f')[:-3])
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD:labm8/py/labdate.py
-<<<<<<< HEAD
-<<<<<<< HEAD:labm8/py/labdate.py
-def DatetimeFromMillisecondsTimestamp(
-<<<<<<< HEAD:labm8/py/labdate.py
-  timestamp: int = None,
-) -> datetime.datetime:
-=======
-    timestamp: int = None) -> datetime.datetime:
->>>>>>> 303e215d5... Add default arg to labdate function.:lib/labm8/labdate.py
-=======
 def DatetimeFromMillisecondsTimestamp(timestamp: int = None,
                                      ) -> datetime.datetime:
->>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/labdate.py
-=======
-def DatetimeFromMillisecondsTimestamp(
-  timestamp: int = None,
-) -> datetime.datetime:
->>>>>>> 4242aed2a... Automated code format.
-=======
-def DatetimeFromMillisecondsTimestamp(timestamp: int = None,
-                                     ) -> datetime.datetime:
->>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/labdate.py
-=======
-def DatetimeFromMillisecondsTimestamp(
-  timestamp: int = None,
-) -> datetime.datetime:
->>>>>>> 4242aed2a... Automated code format.
   """Get the date of a millisecond timestamp.
 
   Args:
@@ -143,21 +76,9 @@ def DatetimeFromMillisecondsTimestamp(
     ValueError: If the argument is not a positive integer.
   """
   if not (isinstance(timestamp, int) or timestamp is None):
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD:labm8/py/labdate.py
-    raise TypeError("Timestamp must be an integer")
-=======
     raise TypeError('Timestamp must be an integer')
->>>>>>> 303e215d5... Add default arg to labdate function.:lib/labm8/labdate.py
-=======
-    raise TypeError("Timestamp must be an integer")
->>>>>>> 4242aed2a... Automated code format.
-=======
-    raise TypeError("Timestamp must be an integer")
->>>>>>> 4242aed2a... Automated code format.
   if not timestamp:
     timestamp = MillisecondsTimestamp()
   if timestamp < 0:
-    raise ValueError("Negative timestamp not allowed")
+    raise ValueError('Negative timestamp not allowed')
   return datetime.datetime.fromtimestamp(timestamp / 1000)
