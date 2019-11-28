@@ -14,26 +14,9 @@
 """Utility code for working with shells."""
 import os
 
-<<<<<<< HEAD:labm8/py/shell.py
-=======
-
->>>>>>> 13ac44cd6... Add missing shell module.:labm8/shell.py
 
 class ShellEscapeCodes(object):
   """Shell escape codes for pretty-printing."""
-<<<<<<< HEAD:labm8/py/shell.py
-
-  PURPLE = "\033[95m"
-  CYAN = "\033[96m"
-  DARKCYAN = "\033[36m"
-  BLUE = "\033[94m"
-  GREEN = "\033[92m"
-  YELLOW = "\033[93m"
-  RED = "\033[91m"
-  BOLD = "\033[1m"
-  UNDERLINE = "\033[4m"
-  END = "\033[0m"
-=======
   PURPLE = '\033[95m'
   CYAN = '\033[96m'
   DARKCYAN = '\033[36m'
@@ -44,7 +27,6 @@ class ShellEscapeCodes(object):
   BOLD = '\033[1m'
   UNDERLINE = '\033[4m'
   END = '\033[0m'
->>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/shell.py
 
 
 def ShellEscapeList(words):
@@ -70,10 +52,10 @@ def ShellEscapeList(words):
   # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   # See the License for the specific language governing permissions and
   # limitations under the License.
-  if os.name == "nt":
-    return " ".join(words)
+  if os.name == 'nt':
+    return ' '.join(words)
 
-  s = ""
+  s = ''
   for word in words:
     # Single quote word, and replace each ' in word with '"'"'
     s += "'" + word.replace("'", "'\"'\"'") + "' "

@@ -15,34 +15,18 @@
 """
 import contextlib
 import csv
-import datetime
 import inspect
 import os
 import pathlib
 import sys
 import time
 import typing
-<<<<<<< HEAD:labm8/py/prof.py
-from typing import Optional
 
-<<<<<<< HEAD:labm8/py/prof.py
 from labm8.py import app
 from labm8.py import humanize
 from labm8.py import labdate
 from labm8.py import labtypes
 from labm8.py import system
-=======
-from absl import logging
-
-=======
-
-from labm8 import app
->>>>>>> 89b790ba9... Merge absl logging, app, and flags modules.:labm8/prof.py
-from labm8 import humanize
-from labm8 import labdate
-from labm8 import labtypes
-from labm8 import system
->>>>>>> 5feb1d004... Replace third party humanize with own module.:labm8/prof.py
 
 _TIMERS = {}
 
@@ -114,13 +98,13 @@ def stop(name, file=sys.stderr):
       KeyError: If the named timer does not exist.
   """
   if is_enabled():
-    elapsed = time.time() - _TIMERS[name]
+    elapsed = (time.time() - _TIMERS[name])
     if elapsed > 60:
-      elapsed_str = "{:.1f} m".format(elapsed / 60)
+      elapsed_str = '{:.1f} m'.format(elapsed / 60)
     elif elapsed > 1:
-      elapsed_str = "{:.1f} s".format(elapsed)
+      elapsed_str = '{:.1f} s'.format(elapsed)
     else:
-      elapsed_str = "{:.1f} ms".format(elapsed * 1000)
+      elapsed_str = '{:.1f} ms'.format(elapsed * 1000)
 
     del _TIMERS[name]
     print('[prof]', name, elapsed_str, file=file)
@@ -159,58 +143,11 @@ def timers():
     yield name
 
 
-class ProfileTimer(object):
-  """A profiling timer."""
-
-  def __init__(self):
-    self.start: datetime.datetime = datetime.datetime.utcnow()
-    self.end: Optional[datetime.datetime] = None
-
-  def Stop(self):
-    if self.end:
-      return
-    self.end = datetime.datetime.utcnow()
-
-  @property
-  def elapsed(self) -> float:
-    if self.end:
-      return (self.end - self.start).total_seconds()
-    else:
-      return (datetime.datetime.utcnow() - self.start).total_seconds()
-
-  @property
-  def elapsed_ms(self) -> int:
-    return int(round(self.elapsed * 1000))
-
-  def __repr__(self):
-    return humanize.Duration(self.elapsed)
-
-
-@app.skip_log_prefix
 @contextlib.contextmanager
-<<<<<<< HEAD:labm8/py/prof.py
-<<<<<<< HEAD:labm8/py/prof.py
 def Profile(
-  name: typing.Union[str, typing.Callable[[int], str]] = "",
-  print_to: typing.Callable[[str], None] = lambda msg: app.Log(1, msg),
-) -> ProfileTimer:
-=======
-def Profile(name: str = '', print_to: typing.Callable[[str], None] = app.Debug):
->>>>>>> 89b790ba9... Merge absl logging, app, and flags modules.:labm8/prof.py
-=======
-def Profile(
-<<<<<<< HEAD:labm8/py/prof.py
-    name: str = '',
-<<<<<<< HEAD:labm8/py/prof.py
-    print_to: typing.Callable[[str], None] = lambda msg: app.Log(1, msg)):
->>>>>>> 070523b92... Fix refences to app.Debug and app.Info.:labm8/prof.py
-=======
-=======
     name: typing.Union[str, typing.Callable[[int], str]] = '',
->>>>>>> f94e1dba7... Add support for profile label callbacks.:labm8/prof.py
     print_to: typing.Callable[[str], None] = lambda msg: app.Log(1, msg),
 ):
->>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/prof.py
   """A context manager which prints the elapsed time upon exit.
 
   Args:
@@ -219,34 +156,17 @@ def Profile(
       argument.
     print_to: The function to print the result to.
   """
-<<<<<<< HEAD:labm8/py/prof.py
-  name = name or "completed"
-  timer = ProfileTimer()
-  yield timer
-  timer.Stop()
-  if callable(name):
-    name = name(timer.elapsed)
-  print_to(f"{name} in {timer}")
-=======
   name = name or 'completed'
   start_time = time.time()
   yield
   elapsed = time.time() - start_time
-<<<<<<< HEAD:labm8/py/prof.py
-<<<<<<< HEAD:labm8/py/prof.py
-  print_to(f"{name} in {humanize.Duration(elapsed)}")
->>>>>>> 5feb1d004... Replace third party humanize with own module.:labm8/prof.py
-=======
-=======
   if callable(name):
     name = name(elapsed)
->>>>>>> f94e1dba7... Add support for profile label callbacks.:labm8/prof.py
   print_to(f'{name} in {humanize.Duration(elapsed)}')
->>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/prof.py
 
 
 @contextlib.contextmanager
-def ProfileToFile(file_object, name: str = ""):
+def ProfileToFile(file_object, name: str = ''):
   """A context manager which prints profiling output to a file.
 
   Args:
@@ -256,19 +176,20 @@ def ProfileToFile(file_object, name: str = ""):
 
   def _WriteToFile(message: str):
     """Print message to file, appending a newline."""
-    file_object.write(f"{message}\n")
+    file_object.write(f'{message}\n')
 
   yield Profile(name=name, print_to=_WriteToFile)
 
 
 class ProfilingEvent(object):
+
   def __init__(self, start_time: int, name: str):
     self.start_time = start_time
     self.name = name
 
 
 @contextlib.contextmanager
-def ProfileToStdout(name: str = ""):
+def ProfileToStdout(name: str = ''):
   """A context manager which prints the elapsed time to stdout on exit.
 
   Args:
@@ -279,7 +200,8 @@ def ProfileToStdout(name: str = ""):
 
 
 class AutoCsvProfiler(object):
-  def __init__(self, directory: pathlib.Path, name: str = "profile"):
+
+  def __init__(self, directory: pathlib.Path, name: str = 'profile'):
     self._directory = pathlib.Path(directory)
     if not self._directory.is_dir():
       raise ValueError(f'Directory not found: {directory}')
@@ -288,38 +210,15 @@ class AutoCsvProfiler(object):
     # Create the name of the logfile now, so that is timestamped to the start of
     # execution.
     timestamp = labdate.MillisecondsTimestamp()
-<<<<<<< HEAD:labm8/py/prof.py
-    log_name = ".".join([self._name, system.HOSTNAME, str(timestamp), "csv"])
-=======
     log_name = '.'.join([self._name, system.HOSTNAME, str(timestamp), 'csv'])
->>>>>>> 13ff42e29... Fix member variable.:labm8/prof.py
     self._path = self._directory / log_name
 
     with self._writer() as writer:
-<<<<<<< HEAD:labm8/py/prof.py
-<<<<<<< HEAD:labm8/py/prof.py
       writer.writerow(
-<<<<<<< HEAD:labm8/py/prof.py
-        ("Start Time (ms since UNIX epoch)", "Elapsed Time (ms)", "Event"),
-      )
-=======
-          ('Start Time (ms since UNIX epoch)', 'Elapsed Time (ms)', 'Event'))
->>>>>>> 20c7c2304... Fix CSV writer.:labm8/prof.py
-=======
-      writer.writerow(('Start Time (ms since UNIX epoch)', 'Elapsed Time (ms)',
-                       'Event'))
->>>>>>> 5feb1d004... Replace third party humanize with own module.:labm8/prof.py
-=======
-      writer.writerow(
-<<<<<<< HEAD:labm8/py/prof.py
-          ('Start Time (ms since UNIX epoch)', 'Elapsed Time (ms)', 'Event'))
->>>>>>> bb562b8d7... Refresh labm8 for new deps.:labm8/prof.py
-=======
           ('Start Time (ms since UNIX epoch)', 'Elapsed Time (ms)', 'Event'),)
->>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/prof.py
 
   @contextlib.contextmanager
-  def Profile(self, event_name: str = ""):
+  def Profile(self, event_name: str = ''):
     """A context manager which prints the elapsed time upon exit.
 
     Args:
@@ -333,7 +232,7 @@ class AutoCsvProfiler(object):
 
   @contextlib.contextmanager
   def _writer(self):
-    with open(self.path, "a") as f:
+    with open(self.path, 'a') as f:
       writer = csv.writer(f)
       yield writer
 
