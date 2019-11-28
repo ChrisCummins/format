@@ -12,23 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utility code for working with sqlalchemy."""
-<<<<<<< HEAD:labm8/py/sqlutil.py
-=======
-import collections
->>>>>>> 5f35cfa11... Add a Database.Close() method.:labm8/sqlutil.py
 import contextlib
-import os
 import pathlib
-<<<<<<< HEAD:labm8/py/sqlutil.py
-import queue
-import sqlite3
-import sys
-import threading
 import time
 import typing
-from typing import Callable
-from typing import List
-from typing import Optional
 
 import sqlalchemy as sql
 from absl import flags as absl_flags
@@ -40,49 +27,16 @@ from sqlalchemy.ext import declarative
 from labm8.py import humanize
 from labm8.py import labdate
 from labm8.py import pbutil
-from labm8.py import progress
 from labm8.py import text
 from labm8.py.internal import logging
-=======
-import time
-import typing
-
-import sqlalchemy as sql
-from absl import flags as absl_flags
-from sqlalchemy import func
-from sqlalchemy import orm
-from sqlalchemy.dialects import mysql
-from sqlalchemy.ext import declarative
-
-from labm8 import humanize
-from labm8 import labdate
-from labm8 import pbutil
-from labm8 import text
-from labm8.internal import logging
-<<<<<<< HEAD:labm8/py/sqlutil.py
-from sqlalchemy import func
-from sqlalchemy import orm
-from sqlalchemy.dialects import mysql
-from sqlalchemy.ext import declarative
->>>>>>> 5f35cfa11... Add a Database.Close() method.:labm8/sqlutil.py
-=======
->>>>>>> 6b5b3e1d6... Replace collections.namedtuple with classes.:labm8/sqlutil.py
 
 FLAGS = absl_flags.FLAGS
 
 absl_flags.DEFINE_boolean(
-  "sqlutil_echo",
-  False,
-  "If True, the Engine will log all statements as well as a repr() of their "
-  "parameter lists to the engines logger, which defaults to sys.stdout.",
-)
-absl_flags.DEFINE_boolean(
-  "sqlutil_pool_pre_ping",
-  True,
-  "Enable pessimistic pre-ping to check that database connections are "
-  "alive. This adds some overhead, but reduces the risk of "
-  '"server has gone away" errors. See:'
-  "<https://docs.sqlalchemy.org/en/13/core/pooling.html#disconnect-handling-pessimistic>",
+    'sqlutil_echo',
+    False,
+    'If True, the Engine will log all statements as well as a repr() of their '
+    'parameter lists to the engines logger, which defaults to sys.stdout.',
 )
 absl_flags.DEFINE_boolean(
     'sqlutil_pool_pre_ping', True,
@@ -92,29 +46,17 @@ absl_flags.DEFINE_boolean(
     '<https://docs.sqlalchemy.org/en/13/core/pooling.html#disconnect-handling-pessimistic>'
 )
 absl_flags.DEFINE_integer(
-  "mysql_engine_pool_size",
-  5,
-  "The number of connections to keep open inside the connection pool. A "
-  "--mysql_engine_pool_size of 0 indicates no limit",
+    'mysql_engine_pool_size',
+    5,
+    'The number of connections to keep open inside the connection pool. A '
+    '--mysql_engine_pool_size of 0 indicates no limit',
 )
 absl_flags.DEFINE_integer(
-  "mysql_engine_max_overflow",
-  10,
-  "The number of connections to allow in connection pool “overflow”, that "
-  "is connections that can be opened above and beyond the "
-  "--mysql_engine_pool_size setting",
-)
-absl_flags.DEFINE_boolean(
-  "mysql_assume_utf8_charset",
-  True,
-  "Default to adding the '?charset=utf8' suffix to MySQL database URLs.",
-)
-absl_flags.DEFINE_boolean(
-  "sqlite_enable_foreign_keys",
-  True,
-  "Enable foreign key support for SQLite. This enforces foreign key "
-  "constraints, and enables cascaded update/delete statements. See: "
-  "https://docs.sqlalchemy.org/en/13/dialects/sqlite.html#foreign-key-support",
+    'mysql_engine_max_overflow',
+    10,
+    'The number of connections to allow in connection pool “overflow”, that '
+    'is connections that can be opened above and beyond the '
+    '--mysql_engine_pool_size setting',
 )
 
 # The Query type is returned by Session.query(). This is a convenience for type
@@ -144,12 +86,10 @@ def Base(*args, **kwargs) -> sql.ext.declarative.DeclarativeMeta:
   return sql.ext.declarative.declarative_base(*args, **kwargs)
 
 
-def GetOrAdd(
-  session: sql.orm.session.Session,
-  model,
-  defaults: typing.Dict[str, object] = None,
-  **kwargs,
-):
+def GetOrAdd(session: sql.orm.session.Session,
+             model,
+             defaults: typing.Dict[str, object] = None,
+             **kwargs):
   """Instantiate a mapped database object.
 
   If the object is not in the database,
@@ -168,29 +108,27 @@ def GetOrAdd(
   instance = session.query(model).filter_by(**kwargs).first()
   if not instance:
     params = {
-      k: v
-      for k, v in kwargs.items()
-      if not isinstance(v, sql.sql.expression.ClauseElement)
+        k: v
+        for k, v in kwargs.items()
+        if not isinstance(v, sql.sql.expression.ClauseElement)
     }
     params.update(defaults or {})
     instance = model(**params)
     session.add(instance)
     logging.Log(
-      logging.GetCallingModuleName(),
-      5,
-      "New record: %s(%s)",
-      model.__name__,
-      params,
+        logging.GetCallingModuleName(),
+        5,
+        'New record: %s(%s)',
+        model.__name__,
+        params,
     )
   return instance
 
 
-def Get(
-  session: sql.orm.session.Session,
-  model,
-  defaults: typing.Dict[str, object] = None,
-  **kwargs,
-):
+def Get(session: sql.orm.session.Session,
+        model,
+        defaults: typing.Dict[str, object] = None,
+        **kwargs):
   """Determine if a database object exists.
 
   Args:
@@ -263,27 +201,26 @@ def CreateEngine(url: str, must_exist: bool = False) -> sql.engine.Engine:
   engine_args = {}
 
   # Read and expand a `file://` prefixed URL.
-  url = ResolveUrl(url)
+  url = ExpandFileUrl(url)
 
-  if url.startswith("mysql://"):
+  if url.startswith('mysql://'):
     # Support for MySQL dialect.
 
     # We create a throwaway engine that we use to check if the requested
     # database exists.
-    engine = sql.create_engine("/".join(url.split("/")[:-1]))
-    database = url.split("/")[-1].split("?")[0]
+    engine = sql.create_engine('/'.join(url.split('/')[:-1]))
+    database = url.split('/')[-1].split('?')[0]
     query = engine.execute(
-      sql.text(
-        "SELECT SCHEMA_NAME FROM "
-        "INFORMATION_SCHEMA.SCHEMATA WHERE "
-        "SCHEMA_NAME = :database",
-      ),
-      database=database,
+        sql.text(
+            'SELECT SCHEMA_NAME FROM '
+            'INFORMATION_SCHEMA.SCHEMATA WHERE '
+            'SCHEMA_NAME = :database',),
+        database=database,
     )
 
     # Engine-specific options.
-    engine_args["pool_size"] = FLAGS.mysql_engine_pool_size
-    engine_args["max_overflow"] = FLAGS.mysql_engine_max_overflow
+    engine_args['pool_size'] = FLAGS.mysql_engine_pool_size
+    engine_args['max_overflow'] = FLAGS.mysql_engine_max_overflow
 
     if not query.first():
       if must_exist:
@@ -292,23 +229,22 @@ def CreateEngine(url: str, must_exist: bool = False) -> sql.engine.Engine:
         # We can't use sql.text() escaping here because it uses single quotes
         # for escaping. MySQL only accepts backticks for quoting database
         # names.
-        engine.execute(f"CREATE DATABASE `{database}`")
+        engine.execute(f'CREATE DATABASE `{database}`')
     engine.dispose()
-  elif url.startswith("sqlite://"):
+  elif url.startswith('sqlite://'):
     # Support for SQLite dialect.
 
     # This project (phd) deliberately disallows relative paths due to Bazel
     # sandboxing.
-    if url != "sqlite://" and not url.startswith("sqlite:////"):
-      raise ValueError("Relative path to SQLite database is not allowed")
+    if url != 'sqlite://' and not url.startswith('sqlite:////'):
+      raise ValueError('Relative path to SQLite database is not allowed')
 
-    if url == "sqlite://":
+    if url == 'sqlite://':
       if must_exist:
         raise ValueError(
-          "must_exist=True not valid for in-memory SQLite database",
-        )
+            'must_exist=True not valid for in-memory SQLite database',)
     else:
-      path = pathlib.Path(url[len("sqlite:///") :])
+      path = pathlib.Path(url[len('sqlite:///'):])
       if must_exist:
         if not path.is_file():
           raise DatabaseNotFound(url)
@@ -316,15 +252,15 @@ def CreateEngine(url: str, must_exist: bool = False) -> sql.engine.Engine:
         # Make the parent directory for SQLite database if creating a new
         # database.
         path.parent.mkdir(parents=True, exist_ok=True)
-  elif url.startswith("postgresql://"):
+  elif url.startswith('postgresql://'):
     # Support for PostgreSQL dialect.
 
-    engine = sql.create_engine("/".join(url.split("/")[:-1] + ["postgres"]))
+    engine = sql.create_engine('/'.join(url.split('/')[:-1] + ['postgres']))
     conn = engine.connect()
-    database = url.split("/")[-1]
+    database = url.split('/')[-1]
     query = conn.execute(
-      sql.text("SELECT 1 FROM pg_database WHERE datname = :database"),
-      database=database,
+        sql.text('SELECT 1 FROM pg_database WHERE datname = :database'),
+        database=database,
     )
     if not query.first():
       if must_exist:
@@ -332,38 +268,20 @@ def CreateEngine(url: str, must_exist: bool = False) -> sql.engine.Engine:
       else:
         # PostgreSQL does not let you create databases within a transaction, so
         # manually complete the transaction before creating the database.
-        conn.execute(sql.text("COMMIT"))
+        conn.execute(sql.text('COMMIT'))
         # PostgreSQL does not allow single quoting of database names.
-        conn.execute(f"CREATE DATABASE {database}")
+        conn.execute(f'CREATE DATABASE {database}')
     conn.close()
     engine.dispose()
   else:
     raise ValueError(f"Unsupported database URL='{url}'")
 
   # Create the engine.
-<<<<<<< HEAD:labm8/py/sqlutil.py
-  engine = sql.create_engine(
-<<<<<<< HEAD:labm8/py/sqlutil.py
-    url,
-    encoding="utf-8",
-    echo=FLAGS.sqlutil_echo,
-    pool_pre_ping=FLAGS.sqlutil_pool_pre_ping,
-    **engine_args,
-  )
-=======
-      url,
-      encoding='utf-8',
-      echo=FLAGS.sqlutil_echo,
-      pool_pre_ping=FLAGS.sqlutil_pool_pre_ping,
-      **engine_args)
->>>>>>> 671bc9471... Add database pre-ping by default.:labm8/sqlutil.py
-=======
   engine = sql.create_engine(url,
                              encoding='utf-8',
                              echo=FLAGS.sqlutil_echo,
                              pool_pre_ping=FLAGS.sqlutil_pool_pre_ping,
                              **engine_args)
->>>>>>> 5f35cfa11... Add a Database.Close() method.:labm8/sqlutil.py
 
   # Create and immediately close a connection. This is because SQLAlchemy engine
   # is lazily instantiated, so for connections such as SQLite, this line
@@ -373,38 +291,13 @@ def CreateEngine(url: str, must_exist: bool = False) -> sql.engine.Engine:
   return engine
 
 
-@sql.event.listens_for(sql.engine.Engine, "connect")
-def EnableSqliteForeignKeysCallback(dbapi_connection, connection_record):
-  """Enable foreign key constraints for SQLite databases.
+def ExpandFileUrl(url: str):
+  """Expand URLs which begin with 'file://' by reading the file contents.
 
-  See --sqlite_enable_foreign_keys for details.
-  """
-  del connection_record
-  # This callback listens for *all* database connections, not just SQLite. Check
-  # the type before trying to run an SQLite-specific pragma.
-  if FLAGS.sqlite_enable_foreign_keys and isinstance(
-    dbapi_connection, sqlite3.Connection
-  ):
-    cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.close()
-
-
-def ResolveUrl(url: str, use_flags: bool = True):
-  """Resolve the URL of a database.
-
-  The following modifications are supported:
-    * If the url begins with 'file://', the URL is substituted with the
-      contents of the file.
-    * If --mysql_assume_utf8_charset is set, then '?charset=utf8' suffix is
-      appended to URLs which begin with mysql://.
-    * Shell variables are expanded.
+  If the URL does not begin with `file://`, it is returned unmodified.
 
   Args:
     url: The URL to expand, e.g. `file://path/to/file.txt?arg'
-    use_flags: Determine whether behaviour is dictated by the FLAGS variables.
-      Set this to False only when resolving database URLs before flags parsing,
-      e.g. in enumerating test fixtures.
 
   Returns:
     The URL as interpreted by reading any URL file.
@@ -413,38 +306,31 @@ def ResolveUrl(url: str, use_flags: bool = True):
     ValueError: If the file path is invalid.
     FileNotFoundError: IF the file path does not exist.
   """
-  # Substitute shell variables.
-  url = os.path.expandvars(url)
+  if not url.startswith('file://'):
+    return url
 
-  if url.startswith("file://"):
-    # Split the URL into the file path, and the optional suffix.
-    components = url.split("?")
-    path, suffix = components[0], "?".join(components[1:])
+  # Split the URL into the file path, and the optional suffix.
+  components = url.split('?')
+  path, suffix = components[0], '?'.join(components[1:])
 
-    # Strip the file:// prefix from the path.
-    path = pathlib.Path(path[len("file://") :])
+  # Strip the file:// prefix from the path.
+  path = pathlib.Path(path[len('file://'):])
 
-    if not path.is_absolute():
-      raise ValueError("Relative path to file:// is not allowed")
+  if not path.is_absolute():
+    raise ValueError('Relative path to file:// is not allowed')
 
-    if not path.is_file():
-      raise FileNotFoundError(f"File '{path}' not found")
+  if not path.is_file():
+    raise FileNotFoundError(f"File '{path}' not found")
 
-    # Read the contents of the file, ignoring lines starting with '#'.
-    with open(path) as f:
-      url = "\n".join(
-        x for x in f.read().split("\n") if not x.lstrip().startswith("#")
-      ).strip()
+  # Read the contents of the file, ignoring lines starting with '#'.
+  with open(path) as f:
+    file_url = '\n'.join(x for x in f.read().split('\n')
+                         if not x.lstrip().startswith('#')).strip()
 
-    # Append the suffix.
-    url += suffix
+  # Append the suffix.
+  file_url += suffix
 
-  if (
-    use_flags and url.startswith("mysql://") and FLAGS.mysql_assume_utf8_charset
-  ):
-    url += "?charset=utf8"
-
-  return url
+  return file_url
 
 
 def ColumnNames(model) -> typing.List[str]:
@@ -469,9 +355,8 @@ class Session(orm.session.Session):
   An instance of this class is returned by Database.Session().
   """
 
-  def GetOrAdd(
-    self, model, defaults: typing.Dict[str, object] = None, **kwargs
-  ):
+  def GetOrAdd(self, model, defaults: typing.Dict[str, object] = None,
+               **kwargs):
     """Instantiate a mapped database object.
 
     If the object is not in the database, add it. Note that no change is written
@@ -549,22 +434,20 @@ class Database(object):
     if not are_you_sure_about_this_flag:
       raise ValueError("Let's take a minute to think things over")
 
-    if self.url.startswith("mysql://"):
-      engine = sql.create_engine("/".join(self.url.split("/")[:-1]))
-      database = self.url.split("/")[-1].split("?")[0]
-      logging.Log(logging.GetCallingModuleName(), 1, "database %s", database)
-      engine.execute(f"DROP DATABASE IF EXISTS `{database}`")
-    elif self.url == "sqlite://":
-      # In-memory databases do not dropping.
-      pass
-    elif self.url.startswith("sqlite:///"):
-      path = pathlib.Path(self.url[len("sqlite:///") :])
+    if self.url.startswith('mysql://'):
+      engine = sql.create_engine('/'.join(self.url.split('/')[:-1]))
+      database = self.url.split('/')[-1].split('?')[0]
+      engine.execute(
+          sql.text('DROP DATABASE IF EXISTS :database'),
+          database=database,
+      )
+    elif self.url.startswith('sqlite://'):
+      path = pathlib.Path(self.url[len('sqlite:///'):])
       assert path.is_file()
       path.unlink()
     else:
       raise NotImplementedError(
-        f"Unsupported operation DROP for database: '{self.url}'",
-      )
+          "Unsupported operation DROP for database: '{self.url}'",)
 
   @property
   def url(self) -> str:
@@ -572,28 +455,16 @@ class Database(object):
     return self._url
 
   @contextlib.contextmanager
-  def Session(
-    self, commit: bool = False, session: Optional[Session] = None
-  ) -> Session:
+  def Session(self, commit: bool = False) -> Session:
     """Provide a transactional scope around a session.
-
-    The optional session argument may be used for cases where you want to
-    optionally re-use an existing session, rather than always creating a new
-    session, e.g.:
-
-      class MyDatabase(sqlutil.Database):
-        def DoAThing(self, session=None):
-          with self.Session(session=session, commit=True):
-            # go nuts ...
 
     Args:
       commit: If true, commit session at the end of scope.
-      session: An existing session object to re-use.
 
     Returns:
       A database session.
     """
-    session = session or self.MakeSession()
+    session = self.MakeSession()
     try:
       yield session
       if commit:
@@ -611,7 +482,7 @@ class Database(object):
     This can be used to select a random row from a table, e.g.
         session.query(Table).order_by(db.Random()).first()
     """
-    if self.url.startswith("mysql"):
+    if self.url.startswith('mysql'):
       return func.rand
     else:
       return func.random  # for PostgreSQL, SQLite
@@ -660,7 +531,7 @@ class PluralTablenameFromCamelCapsClassNameMixin(object):
   @declarative.declared_attr
   def __tablename__(self):
     pluralised = humanize.Plural(2, self.__name__)
-    pluralised = " ".join(pluralised.split()[1:])
+    pluralised = ' '.join(pluralised.split()[1:])
     return text.CamelCapsToUnderscoreSeparated(pluralised)
 
 
@@ -673,7 +544,6 @@ class ProtoBackedMixin(object):
   This is only an interface - inheriting classes must still inherit from
   sqlalchemy.ext.declarative.declarative_base().
   """
-
   proto_t = None
 
   def SetProto(self, proto: pbutil.ProtocolBuffer) -> None:
@@ -683,8 +553,7 @@ class ProtoBackedMixin(object):
       proto: A protocol buffer.
     """
     raise NotImplementedError(
-      f"{type(self).__name__}.SetProto() not implemented",
-    )
+        f'{type(self).__name__}.SetProto() not implemented',)
 
   def ToProto(self) -> pbutil.ProtocolBuffer:
     """Serialize the instance to protocol buffer.
@@ -698,7 +567,8 @@ class ProtoBackedMixin(object):
 
   @classmethod
   def FromProto(
-    cls, proto: pbutil.ProtocolBuffer,
+      cls,
+      proto: pbutil.ProtocolBuffer,
   ) -> typing.Dict[str, typing.Any]:
     """Return a dictionary of instance constructor args from proto.
 
@@ -716,8 +586,7 @@ class ProtoBackedMixin(object):
       A dictionary of constructor arguments.
     """
     raise NotImplementedError(
-      f"{type(self).__name__}.FromProto() not implemented",
-    )
+        f'{type(self).__name__}.FromProto() not implemented',)
 
   @classmethod
   def FromFile(cls, path: pathlib.Path) -> typing.Dict[str, typing.Any]:
@@ -742,10 +611,6 @@ class ProtoBackedMixin(object):
 
 class OffsetLimitQueryResultsBatch(typing.NamedTuple):
   """The results of an offset-limit batched query."""
-<<<<<<< HEAD:labm8/py/sqlutil.py
-
-=======
->>>>>>> 6b5b3e1d6... Replace collections.namedtuple with classes.:labm8/sqlutil.py
   # The current batch number.
   batch_num: int
   # Offset into the results set.
@@ -759,10 +624,10 @@ class OffsetLimitQueryResultsBatch(typing.NamedTuple):
 
 
 def OffsetLimitBatchedQuery(
-  query: Query,
-  batch_size: int = 1000,
-  start_at: int = 0,
-  compute_max_rows: bool = False,
+    query: Query,
+    batch_size: int = 1000,
+    start_at: int = 0,
+    compute_max_rows: bool = False,
 ) -> typing.Iterator[OffsetLimitQueryResultsBatch]:
   """Split and return the rows resulting from a query in to batches.
 
@@ -795,11 +660,11 @@ def OffsetLimitBatchedQuery(
     batch = query.offset(i).limit(batch_size).all()
     if batch:
       yield OffsetLimitQueryResultsBatch(
-        batch_num=batch_num,
-        offset=i,
-        limit=i + batch_size,
-        max_rows=max_rows,
-        rows=batch,
+          batch_num=batch_num,
+          offset=i,
+          limit=i + batch_size,
+          max_rows=max_rows,
+          rows=batch,
       )
       i += len(batch)
     else:
@@ -810,7 +675,7 @@ class ColumnTypes(object):
   """Abstract class containing methods for generating column types."""
 
   def __init__(self):
-    raise TypeError("abstract class")
+    raise TypeError('abstract class')
 
   @staticmethod
   def BinaryArray(length: int):
@@ -822,16 +687,7 @@ class ColumnTypes(object):
     Returns:
       A column type.
     """
-    return sql.Binary(length).with_variant(mysql.BINARY(length), "mysql")
-
-  @staticmethod
-  def LargeBinary():
-    """Return a fixed size binary array column type.
-
-    Returns:
-      A column type.
-    """
-    return sql.LargeBinary().with_variant(sql.LargeBinary(2 ** 31), "mysql")
+    return sql.Binary(length).with_variant(mysql.BINARY(length), 'mysql')
 
   @staticmethod
   def LargeBinary():
@@ -851,7 +707,7 @@ class ColumnTypes(object):
     Returns:
       A column type.
     """
-    return sql.UnicodeText().with_variant(sql.UnicodeText(2 ** 31), "mysql")
+    return sql.UnicodeText().with_variant(sql.UnicodeText(2**31), 'mysql')
 
   @staticmethod
   def IndexableString(length: int = None):
@@ -865,9 +721,8 @@ class ColumnTypes(object):
     MAX_LENGTH = 767
     if length and length > MAX_LENGTH:
       raise ValueError(
-        f"IndexableString requested length {length} is greater "
-        f"than maximum allowed {MAX_LENGTH}",
-      )
+          f'IndexableString requested length {length} is greater '
+          f'than maximum allowed {MAX_LENGTH}',)
     return sql.String(MAX_LENGTH)
 
   @staticmethod
@@ -877,7 +732,7 @@ class ColumnTypes(object):
     Returns:
       A column type.
     """
-    return sql.DateTime().with_variant(mysql.DATETIME(fsp=3), "mysql")
+    return sql.DateTime().with_variant(mysql.DATETIME(fsp=3), 'mysql')
 
 
 class ColumnFactory(object):
@@ -885,7 +740,8 @@ class ColumnFactory(object):
 
   @staticmethod
   def MillisecondDatetime(
-    nullable: bool = False, default=labdate.GetUtcMillisecondsNow,
+      nullable: bool = False,
+      default=labdate.GetUtcMillisecondsNow,
   ):
     """Return a datetime column with millisecond precision.
 
@@ -893,9 +749,12 @@ class ColumnFactory(object):
       A column which defaults to UTC now.
     """
     return sql.Column(
-      sql.DateTime().with_variant(mysql.DATETIME(fsp=3), "mysql",),
-      nullable=nullable,
-      default=default,
+        sql.DateTime().with_variant(
+            mysql.DATETIME(fsp=3),
+            'mysql',
+        ),
+        nullable=nullable,
+        default=default,
     )
 
 
@@ -925,11 +784,11 @@ def ResilientAddManyAndCommit(db: Database, mapped: typing.Iterable[Base]):
       session.add_all(mapped)
   except sql.exc.SQLAlchemyError as e:
     logging.Log(
-      logging.GetCallingModuleName(),
-      1,
-      "Caught error while committing %d mapped objects: %s",
-      len(mapped),
-      e,
+        logging.GetCallingModuleName(),
+        1,
+        'Caught error while committing %d mapped objects: %s',
+        len(mapped),
+        e,
     )
 
     # Divide and conquer. If we're committing only a single object, then a
@@ -948,16 +807,8 @@ def ResilientAddManyAndCommit(db: Database, mapped: typing.Iterable[Base]):
   return failures
 
 
-def QueryToString(query) -> str:
-  """Compile the query to inline literals in place of '?' placeholders.
-
-  See: https://stackoverflow.com/a/23835766
-  """
-  return str(query.statement.compile(compile_kwargs={"literal_binds": True}))
-
-
-class BufferedDatabaseWriter(threading.Thread):
-  """A buffered writer for adding objects to a database.
+class BufferedDatabaseWriter(object):
+  """A buffer for adding objects to a session with frequent commits.
 
   Use this class for cases when you are producing lots of mapped objects that
   you would like to commit to a database, but don't require them to be committed
@@ -965,245 +816,73 @@ class BufferedDatabaseWriter(threading.Thread):
   minimises the number of SQL statements that are executed, and is faster than
   creating and committing a session for every object.
 
-  This object spawns a separate thread for asynchronously performing database
-  writes. Use AddOne() and AddMany() methods to add objects to the write buffer.
-  Note that because this is a multithreaded implementation, in-memory SQLite
-  databases are not supported.
+  The Flush() method commits the contents of the buffer. The user is responsible
+  for calling Flush() once the object reaches the end of its use. Alternatively,
+  the Session() method creates a context which automatically calls Flush() at
+  the end of its scope.
 
-  The user is responsible for calling Close() to flush the contents of the
-  buffer and terminate the thread. Alternatively, use this class as a context
-  manager to automatically flush the buffer and terminate the thread:
+  Example usage:
 
-    with BufferedDatabaseWriter(db, max_buffer_length=128) as writer:
+    with BufferedDatabaseWriter(db).Session() as writer:
       for chunk in chunks_to_process:
         objs = ProcessChunk(chunk)
         writer.AddMany(objs)
   """
 
-  def __init__(
-    self,
-    db: Database,
-    max_buffer_size: Optional[int] = None,
-    max_buffer_length: Optional[int] = None,
-    max_seconds_since_flush: Optional[float] = None,
-    log_level: int = 2,
-    ctx: progress.ProgressContext = progress.NullContext,
-  ):
-    """Constructor.
+  def __init__(self, db: Database, flush_secs: int = 30, max_queue: int = 1024):
+    """Create a BufferedDatabaseWriter.
 
     Args:
-      db: The database to write to.
-      max_buffer_size: The maximum size of the buffer before flushing, in bytes.
-        The buffer size is the sum of the elements in the write buffer. The size
-        of elements is determined using sys.getsizeof(), and has all the caveats
-        of this method.
-      max_buffer_length: The maximum number of items in the write buffer before
-        flushing.
-      max_seconds_since_flush: The maximum number of elapsed seconds between
-        flushes.
-      ctx: progress.ProgressContext = progress.NullContext,
-      log_level: The logging level for logging output.
+      db: The Database instance that this writer will add to.
+      flush_secs: The number of seconds between commits.
+      max_queue: The maximum size of the buffer between commits.
     """
-    super(BufferedDatabaseWriter, self).__init__()
-    self.db = db
-    self.ctx = ctx
-    self.log_level = log_level
+    self._db = db
+    self._last_commit = time.time()
+    self._to_commit = []
+    self._flush_secs = flush_secs
+    self._max_queue = max_queue
 
-    self.max_seconds_since_flush = max_seconds_since_flush
-    self.max_buffer_size = max_buffer_size
-    self.max_buffer_length = max_buffer_length
+  def __del__(self):
+    self.Flush()
 
-    # Counters.
-    self.flush_count = 0
-    self.error_count = 0
+  @contextlib.contextmanager
+  def Session(self) -> 'BufferedDatabaseWriter':
+    """Yields a context manager which calls Flush() at the end of the scope.
 
-    self._buffer = []
-    self.buffer_size = 0
-    self._last_flush = time.time()
-
-    # Limit the size of the queue so that calls to AddOne() or AddMany() will
-    # block if the calling code is too far ahead of the writer.
-    queue_size = self.max_buffer_length * 2 if self.max_buffer_length else 1000
-    self._queue = queue.Queue(maxsize=queue_size)
-
-    self.start()
-
-  def __enter__(self) -> "Buff":
-    """Enter a scoped writer context closes at the end."""
-    return self
-
-  def __exit__(self, exc_type, exc_val, exc_tb):
-    """Exit a scoped writer context closes at the end."""
-    del exc_type
-    del exc_val
-    del exc_tb
-    self.Close()
-
-  def AddOne(self, mapped, size: Optional[int] = None) -> None:
-    """Add a mapped object.
-
-    Args:
-      mapped: The mapped object to write to the database.
-      size: The object sizes to use to update the total buffer size. If not
-        provided, sys.getsizeof() is used to determine the size.
+    Returns:
+      The `self` instance.
     """
-    size = size or sys.getsizeof(mapped)
-    self._queue.put((mapped, size))
+    try:
+      yield self
+    finally:
+      self.Flush()
 
-  def AddMany(self, mappeds, sizes: Optional[List[int]] = None) -> None:
-    """Add many mapped objects.
+  def AddOne(self, mapped: Base) -> None:
+    """Record a mapped object."""
+    self._to_commit.append(mapped)
+    self.MaybeFlush()
 
-    Args:
-      mappeds: The mapped objects to write to the database.
-      sizes: A list of mapped object sizes to use to calculate the buffer size.
-        If not provided, sys.getsizeof() is used to determine the size.
-    """
-    sizes = sizes or [sys.getsizeof(item) for item in mappeds]
+  def AddMany(self, objects: typing.List[Base]) -> None:
+    """Record multiple mapped objects."""
+    self._to_commit += objects
+    self.MaybeFlush()
 
-    for mapped, size in zip(mappeds, sizes):
-      self._queue.put((mapped, size))
-
-  def AddLambdaOp(self, callback: Callable[[Database.SessionType], None]):
-    self._queue.put(BufferedDatabaseWriter.LambdaOp(callback))
+  def MaybeFlush(self) -> None:
+    """Determine if the buffer should be flushed, and if so, flush it."""
+    if (len(self._to_commit) > self._max_queue or
+        (time.time() - self._last_commit) > self._flush_secs):
+      self.Flush()
 
   def Flush(self) -> None:
-    """Flush the buffer.
-
-    This method blocks until the flush has completed.
-
-    In normal use, you can rely on the automated flushing mechanisms to flush
-    the write buffer, rather than calling this by hand.
-    """
-    self._queue.put(BufferedDatabaseWriter.FlushMarker())
-    self._queue.join()
-
-  def Close(self):
-    """Close the writer thread.
-
-    This method blocks until the buffer has been flushed and the thread
-    terminates.
-    """
-    if not self.is_alive():
-      raise TypeError("Close() called on dead BufferedDatabaseWriter")
-    self._queue.put(BufferedDatabaseWriter.CloseMarker())
-    self._queue.join()
-    self.join()
-
-  @property
-  def buffer_length(self) -> int:
-    """Get the current length of the buffer, in range [0, max_buffer_length]."""
-    return len(self._buffer)
-
-  @property
-  def seconds_since_last_flush(self) -> float:
-    """Get the number of seconds since the buffer was last flushed."""
-    return time.time() - self._last_flush
-
-  ##############################################################################
-  # Private methods.
-  ##############################################################################
-
-  class CloseMarker(object):
-    """An object to append to _queue to close the thread."""
-
-    pass
-
-  class FlushMarker(object):
-    """An object to append to _queue to flush the buffer."""
-
-    pass
-
-  class LambdaOp(object):
-    def __init__(self, callback):
-      self.callback = callback
-
-    def __call__(self, session: Database.SessionType):
-      self.callback(session)
-
-  def run(self):
-    """The thread loop."""
-    while True:
-      # Block until there is something on the queue. Use max_seconds_since_flush
-      # as a timeout to ensure that flushes still occur when the writer is not
-      # being used.
-      try:
-        item = self._queue.get(timeout=self.max_seconds_since_flush)
-      except queue.Empty:
-        self._Flush()
-        continue
-
-      if isinstance(item, BufferedDatabaseWriter.CloseMarker):
-        # End of queue. Break out of the loop.
-        break
-      elif isinstance(item, BufferedDatabaseWriter.FlushMarker):
-        # Force a flush.
-        self._Flush()
-      elif isinstance(item, BufferedDatabaseWriter.LambdaOp):
-        # Handle delete op.
-        self._buffer.append(item)
-        self._MaybeFlush()
-      else:
-        # Add the object to the buffer.
-        mapped, size = item
-        self._buffer.append(mapped)
-        self.buffer_size += size
-        self._MaybeFlush()
-
-      # Register that the item has been processed. This is used by join() to
-      # signal to stop blocking.
-      self._queue.task_done()
-
-    # Register that the end-of-queue marker has been processed.
-    self._Flush()
-    self._queue.task_done()
-
-  def _MaybeFlush(self) -> None:
-    if (
-      (self.max_buffer_size and self.buffer_size >= self.max_buffer_size)
-      or (
-        self.max_buffer_length and self.buffer_length >= self.max_buffer_length
+    """Commit all buffered mapped objects to database."""
+    failures = ResilientAddManyAndCommit(self._db, self._to_commit)
+    if len(failures):
+      logging.Log(
+          logging.GetCallingModuleName(),
+          1,
+          'BufferedDatabaseWriter failed to commit %d objects',
+          len(failures),
       )
-      or (
-        self.max_seconds_since_flush
-        and self.seconds_since_last_flush >= self.max_seconds_since_flush
-      )
-    ):
-      self._Flush()
-
-  def _AddMapped(self, mapped) -> None:
-    """Add and commit a list of mapped objects."""
-    if not mapped:
-      return
-
-    failures = ResilientAddManyAndCommit(self.db, mapped)
-    if failures:
-      self.ctx.Error("Logger failed to commit %d objects", len(failures))
-    self.error_count += len(failures)
-
-  def _Flush(self):
-    """Flush the buffer."""
-    if not self._buffer:
-      return
-
-    with self.ctx.Profile(
-      self.log_level,
-      f"Committed {self.buffer_length} rows "
-      f"({humanize.BinaryPrefix(self.buffer_size, 'B')}) to {self.db.url}",
-    ), self.db.Session() as session:
-      # Iterate through the buffer and handle any lambda ops.
-      start_i, end_i = 0, 0
-      for end_i, item in enumerate(self._buffer):
-        if isinstance(item, BufferedDatabaseWriter.LambdaOp):
-          # If we have a lambda op, we flush the contents of the current buffer,
-          # then execute the op and continue.
-          self._AddMapped(self._buffer[start_i:end_i])
-          self._buffer[end_i](session)
-          session.commit()
-          start_i = end_i + 1
-      # Add any remaining mapped objects from the buffer.
-      self._AddMapped(self._buffer[start_i:])
-
-      self._buffer = []
-      self._last_flush = time.time()
-      self.buffer_size = 0
-      self.flush_count += 1
+    self._to_commit = []
+    self._last_commit = time.time()
