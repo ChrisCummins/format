@@ -11,10 +11,6 @@ from absl import logging as absl_logging
 FLAGS = absl_flags.FLAGS
 
 absl_flags.DEFINE_list(
-<<<<<<< HEAD
-<<<<<<< HEAD:labm8/py/internal/logging.py
-=======
->>>>>>> 4242aed2a... Automated code format.
   "vmodule",
   [],
   "Per-module verbose level. The argument has to contain a comma-separated "
@@ -23,17 +19,6 @@ absl_flags.DEFINE_list(
   "filename base (that is, name ignoring .py). <log level> overrides any "
   "value given by --v.",
 )
-<<<<<<< HEAD
-=======
-    'vmodule', [],
-    'Per-module verbose level. The argument has to contain a comma-separated '
-    'list of <module name>=<log level>. <module name> is a glob pattern (e.g., '
-    "gfs* for all modules whose name starts with \"gfs\"), matched against the "
-    'filename base (that is, name ignoring .py). <log level> overrides any '
-    'value given by --v.')
->>>>>>> 49340dc00... Auto-format labm8 python files.:labm8/internal/logging.py
-=======
->>>>>>> 4242aed2a... Automated code format.
 
 # Logging functions.
 
@@ -109,15 +94,7 @@ def Log(calling_module_name: str, level: int, msg, *args, **kwargs):
   """
   module_level = GetModuleVerbosity(calling_module_name)
   if level <= module_level:
-<<<<<<< HEAD
-<<<<<<< HEAD:labm8/py/internal/logging.py
     print_context = kwargs.pop("print_context", None)
-=======
-    print_context = kwargs.pop('print_context', None)
->>>>>>> 35fd6a724... Add `print_context` kwarg to core logger.:labm8/internal/logging.py
-=======
-    print_context = kwargs.pop("print_context", None)
->>>>>>> 4242aed2a... Automated code format.
     if print_context:
       with print_context():
         absl_logging.info(msg, *args, **kwargs)
@@ -210,6 +187,3 @@ def _MyLoggingPrefix(record):
 
 # Swap out absl's logging formatter for my own.
 absl_logging.get_absl_log_prefix = _MyLoggingPrefix
-
-# A function that computes the thread ID.
-UnsignedThreadId = absl_logging._get_thread_id
