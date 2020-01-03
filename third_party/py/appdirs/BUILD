@@ -13,12 +13,6 @@ py_library(
     name = "appdirs",
     srcs = ["//third_party/py:empty.py"],
     deps = [
-<<<<<<< HEAD:third_party/py/appdirs/BUILD
         requirement("appdirs"),
-=======
-        requirement("gspread"),
-        requirement("gspread-dataframe"),
-        "//third_party/py/requests",
->>>>>>> ace5263a2... Add missing implicit package dependencies.:third_party/py/gspread/BUILD
     ],
 )
