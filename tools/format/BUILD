@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+<<<<<<< HEAD
 load("//tools/bzl:exports.bzl", "exports_repo")
 load("@com_github_chriscummins_rules_bats//:bats.bzl", "bats_test")
 
@@ -46,6 +47,9 @@ py_library(
         "//labm8/py:app",
     ],
 )
+=======
+load("@subpar//:subpar.bzl", "par_binary")
+>>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 
 py_library(
     name = "formatter_executor",
@@ -60,12 +64,19 @@ py_library(
     ],
 )
 
+<<<<<<< HEAD
 py_binary(
+=======
+par_binary(
+>>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
     name = "format",
     srcs = ["format.py"],
     deps = [
         ":formatter_executor",
+<<<<<<< HEAD
         ":git_util",
+=======
+>>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
         ":path_generator",
         "//:build_info",
         "//labm8/py:app",
@@ -75,6 +86,7 @@ py_binary(
     ],
 )
 
+<<<<<<< HEAD
 bats_test(
     name = "format_test",
     srcs = ["format_test.bats"],
@@ -93,6 +105,8 @@ py_library(
     ],
 )
 
+=======
+>>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 py_library(
     name = "path_generator",
     srcs = ["path_generator.py"],
@@ -100,6 +114,7 @@ py_library(
         "//labm8/py:app",
     ],
 )
+<<<<<<< HEAD
 
 py_test(
     name = "path_generator_test",
@@ -110,3 +125,5 @@ py_test(
         "//labm8/py:test",
     ],
 )
+=======
+>>>>>>> 10fbb15c0... Begin implementation of new formatter framework.

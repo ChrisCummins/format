@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """This module defines a formatter for Python sources."""
+<<<<<<< HEAD
 import io
 import sys
 
@@ -19,6 +20,9 @@ import black
 import reorder_python_imports
 from click.testing import CliRunner
 from tools.format import formatter
+=======
+from tools.format.formatters import formatter
+>>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 
 
 class FormatPython(formatter.BatchedFormatter):
@@ -26,6 +30,7 @@ class FormatPython(formatter.BatchedFormatter):
 
   def __init__(self, *args, **kwargs):
     super(FormatPython, self).__init__(*args, **kwargs)
+<<<<<<< HEAD
 
     # Replicate functionality of black.patched_main().
     black.patch_click()
@@ -56,3 +61,17 @@ class FormatPython(formatter.BatchedFormatter):
         return sys.stdout.getvalue()
     finally:
       sys.stdout, sys.stderr = old_stdout, old_stderr
+=======
+    self.black = formatter.WhichOrDie("black")
+    self.reorder_python_imports = formatter.WhichOrDie("reorder-python-imports")
+
+  def RunMany(self, paths):
+    error = formatter.ExecOrError(
+      [self.black, "--line-length=80", "--target-version=py37"] + paths
+    )
+    if error:
+      return error
+    return formatter.ExecOrError(
+      [self.reorder_python_imports, "--exit-zero-even-if-changed"] + paths
+    )
+>>>>>>> 10fbb15c0... Begin implementation of new formatter framework.

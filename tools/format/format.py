@@ -23,6 +23,7 @@ Features:
 
   * Automated code styling of C/C++, Python, Java, SQL, JavaScript, HTML,
     CSS, go, and JSON files.
+<<<<<<< HEAD
   * Support for `.formatignore` files to mark files to be excluded from
     formatting. The syntax of ignore files is similar to `.gitignore`, e.g. a
     list of patterns to match, including (recursive) glob expansion, and
@@ -31,6 +32,8 @@ Features:
     and stages changes. The commit is rejected if a partially-staged file is
     modified. Enforce the use of pre-commit mode (and add a "Signed off" footer
     to commits) by running `--install_pre_commit_hook`.
+=======
+>>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
   * Persistent caching of "last modified" timestamps for files to minimize the
     amount of work done.
   * A process lock which prevents races when multiple formatters are launched
@@ -58,8 +61,12 @@ import fasteners
 import build_info
 from labm8.py import app
 from tools.format import formatter_executor
+<<<<<<< HEAD
 from tools.format import git_util
 from tools.format import path_generator as path_generators
+=======
+from tools.format import path_generator
+>>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 from tools.format.formatters.suffix_mapping import mapping as formatters
 
 
@@ -76,6 +83,7 @@ app.DEFINE_boolean(
   "Print the list of filename suffixes which are formatted and return.",
 )
 app.DEFINE_boolean(
+<<<<<<< HEAD
   "dry_run",
   False,
   "Only print the paths of files that will be formatted, without formatting "
@@ -98,6 +106,8 @@ app.DEFINE_boolean(
   "program.",
 )
 app.DEFINE_boolean(
+=======
+>>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
   "with_cache",
   True,
   'Enable the persistent caching of "last modified" timestamps for files. '
@@ -107,6 +117,43 @@ app.DEFINE_boolean(
 )
 
 
+<<<<<<< HEAD
+=======
+def FormatPaths(cache_dir: pathlib.Path, paths: Iterable[pathlib.Path]) -> bool:
+  """Run formatter on an iterable sequence of paths.
+
+  Args:
+    cache_dir: The path of the persistent cache directory.
+    paths: An iterator of paths to format. All paths are assumed to (a) be
+      files, and (b) exist. Duplicates are okay.
+
+  Returns:
+    True if there were errors.
+  """
+  q = queue.Queue()
+  executor = formatter_executor.FormatterExecutor(cache_dir, q)
+  executor.start()
+
+  visited = set()
+  for path in paths:
+    if path in visited:
+      continue
+
+    # Check if there are corresponding formatters, and if so, send it off to
+    # the executor to process.
+    key = path.suffix or path.name
+    if key in formatters:
+      q.put(path)
+
+    visited.add(path)
+
+  q.put(None)
+  executor.join()
+
+  return executor.errors
+
+
+>>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 def GetCacheDir() -> pathlib.Path:
   """Resolve the cache directory for linters."""
   _BAZEL_TEST_TMPDIR = os.environ.get("TEST_TMPDIR")
@@ -120,6 +167,12 @@ def GetCacheDir() -> pathlib.Path:
 
 
 def Main(argv):
+<<<<<<< HEAD
+=======
+  if not argv:
+    raise app.UsageError("Must provide a path")
+
+>>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
   cache_dir = GetCacheDir()
   cache_dir.mkdir(parents=True, exist_ok=True)
 
@@ -129,14 +182,18 @@ def Main(argv):
   elif FLAGS.print_suffixes:
     print("\n".join(sorted(formatters.keys())))
     return
+<<<<<<< HEAD
   elif FLAGS.install_pre_commit_hook:
     git_util.InstallPreCommitHookOrDie(cache_dir)
     return
+=======
+>>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 
   # Acquire an inter-process lock. This does not need to be released - cleanup
   # of inter-process locks using the fasteners library is automatic. This will
   # block indefinitely if the lock is already acquired by a different process,
   # ensuring that only a single formatter is running at a time.
+<<<<<<< HEAD
   lock_file = cache_dir / "LOCK"
   app.Log(3, "Acquiring lock file %s", lock_file)
   assert fasteners.InterProcessLock(lock_file)
@@ -230,6 +287,13 @@ def FormatPathsOrDie(cache_dir: pathlib.Path, paths: List[pathlib.Path]):
     sys.exit(2)
 
   return executor
+=======
+  assert fasteners.InterProcessLock(cache_dir / "LOCK")
+
+  paths = path_generator.GeneratePaths(argv[1:])
+  errors = FormatPaths(cache_dir, paths)
+  sys.exit(1 if errors else 0)
+>>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 
 
 if __name__ == "__main__":

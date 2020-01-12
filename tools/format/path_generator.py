@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+<<<<<<< HEAD
 """This module generates filesystem paths from program arguments."""
 import glob
 import os
@@ -139,3 +140,35 @@ class PathGenerator(object):
             str(ignore_file.parent / pattern), recursive=True
           ):
             self.ignored_paths.add(pathlib.Path(path))
+=======
+"""This module converts program arguments into a list of paths."""
+import glob
+import os
+import pathlib
+from typing import List
+
+from labm8.py import app
+
+
+FLAGS = app.FLAGS
+
+
+def GeneratePaths(args: List[str]):
+  """Enumerate the paths from a list of args.
+
+  For each arg:
+    1. Expand any globs using UNIX glob expansion.
+    2. If the path is a directory, enumerate all files inside the directory
+       and any subdirectories.
+  """
+  # TODO: Look for .formatignore files and ignore paths from them.
+  for arg in args:
+    for path in glob.iglob(arg):
+      path = pathlib.Path(path)
+      if path.is_dir():
+        for root, dirs, files in os.walk(path):
+          for file in files:
+            yield pathlib.Path(root) / file
+      else:
+        yield path
+>>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
