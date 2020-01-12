@@ -14,42 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-<<<<<<< HEAD
-load("//tools/bzl:exports.bzl", "exports_repo")
-load("@com_github_chriscummins_rules_bats//:bats.bzl", "bats_test")
-
-exports_files([
-    "install.sh",
-    "LICENSE",
-    "README.md",
-    "CNAME",
-])
-
-exports_repo(
-    name = "export",
-    extra_files = [
-        "tools/format/install.sh",
-    ],
-    github_repo = "format",
-    move_file_mapping = {
-        "tools/format/README.md": "README.md",
-        "tools/format/LICENSE": "LICENSE",
-        "tools/format/travis.yml": ".travis.yml",
-    },
-    targets = ["//tools/format/..."],
-)
-
-py_library(
-    name = "formatter",
-    srcs = ["formatter.py"],
-    visibility = ["//tools/format/formatters:__subpackages__"],
-    deps = [
-        "//labm8/py:app",
-    ],
-)
-=======
 load("@subpar//:subpar.bzl", "par_binary")
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 
 py_library(
     name = "formatter_executor",
@@ -64,19 +29,11 @@ py_library(
     ],
 )
 
-<<<<<<< HEAD
-py_binary(
-=======
 par_binary(
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
     name = "format",
     srcs = ["format.py"],
     deps = [
         ":formatter_executor",
-<<<<<<< HEAD
-        ":git_util",
-=======
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
         ":path_generator",
         "//:build_info",
         "//labm8/py:app",
@@ -86,27 +43,6 @@ par_binary(
     ],
 )
 
-<<<<<<< HEAD
-bats_test(
-    name = "format_test",
-    srcs = ["format_test.bats"],
-    data = [
-        ":format",
-        "//labm8/sh:test",
-    ],
-)
-
-py_library(
-    name = "git_util",
-    srcs = ["git_util.py"],
-    deps = [
-        "//:build_info",
-        "//labm8/py:app",
-    ],
-)
-
-=======
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 py_library(
     name = "path_generator",
     srcs = ["path_generator.py"],
@@ -114,7 +50,6 @@ py_library(
         "//labm8/py:app",
     ],
 )
-<<<<<<< HEAD
 
 py_test(
     name = "path_generator_test",
@@ -125,5 +60,3 @@ py_test(
         "//labm8/py:test",
     ],
 )
-=======
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.

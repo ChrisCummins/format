@@ -14,30 +14,19 @@
 """This module defines the master thread for executing formatters."""
 import concurrent.futures
 import contextlib
-<<<<<<< HEAD
-=======
 import glob
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 import multiprocessing
 import os
 import pathlib
 import queue
-<<<<<<< HEAD
-import sys
-import threading
-=======
 import threading
 from typing import List
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 
 import sqlalchemy as sql
 
 from labm8.py import app
-<<<<<<< HEAD
-=======
 from labm8.py import crypto
 from labm8.py import shell
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 from labm8.py import sqlutil
 from tools.format.formatters.suffix_mapping import mapping as formatters
 
@@ -66,15 +55,7 @@ class FormatterExecutor(threading.Thread):
     self.cache_path = cache_path
     self.q = q
     self.formatters = {}
-<<<<<<< HEAD
-
-    # The results of formatting. Access these member variables after the thread
-    # has terminated.
     self.errors = False
-    self.modified_files = []
-=======
-    self.errors = False
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 
   @contextlib.contextmanager
   def DatabaseConnection(self):
@@ -106,10 +87,6 @@ CREATE TABLE IF NOT EXISTS cache(
       connection.close()
 
   def run(self):
-<<<<<<< HEAD
-    """Read the input paths and format them as required.."""
-=======
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
     with concurrent.futures.ThreadPoolExecutor(
       max_workers=multiprocessing.cpu_count()
     ) as executor, self.DatabaseConnection() as connection:
@@ -122,20 +99,13 @@ CREATE TABLE IF NOT EXISTS cache(
         if path is None:
           break
 
-<<<<<<< HEAD
-        action = self.MaybeFormat(connection, path)
-        if action:
-          futures.append(executor.submit(action))
-
-      # We have run out of paths to format, finalize the formatters.
-=======
         # Determine if the file should be processed.
         mtime = int(os.path.getmtime(path) * 1e6)
         cached_mtime = None
         if FLAGS.with_cache:
           query = connection.execute(
             sql.text("SELECT mtime FROM cache WHERE path = :path"),
-            path=str(path.absolute()),
+            path=str(path),
           )
           result = query.first()
           if result:
@@ -157,75 +127,29 @@ CREATE TABLE IF NOT EXISTS cache(
         if action:
           futures.append(executor.submit(action))
 
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
       for form in self.formatters.values():
         action = form.Finalize()
         if action:
           futures.append(executor.submit(action))
 
-<<<<<<< HEAD
-      # Wait for the formatters to complete.
-      for future in concurrent.futures.as_completed(futures):
-        paths, cached_mtimes, error = future.result()
-
-=======
       for future in futures:
         paths, cached_mtimes, error = future.result()
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
         for path, cached_mtime in zip(paths, cached_mtimes):
           mtime = int(os.path.getmtime(path) * 1e6)
           if mtime != cached_mtime:
             print(path)
-<<<<<<< HEAD
-            self.modified_files.append(path)
-=======
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
             if not error and FLAGS.with_cache:
               connection.execute(
                 sql.text(
                   "REPLACE INTO cache (path, mtime) VALUES (:path, :mtime)"
                 ),
-<<<<<<< HEAD
                 path=str(path),
-=======
-                path=str(path.absolute()),
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
                 mtime=mtime,
               )
 
         if error:
           print(error, file=sys.stderr)
           self.errors = True
-<<<<<<< HEAD
-
-  def MaybeFormat(self, connection, path: pathlib.Path):
-    """Schedule a file to be formatted if required."""
-    # Determine if the file should be processed.
-    mtime = int(os.path.getmtime(path) * 1e6)
-    cached_mtime = None
-    if FLAGS.with_cache:
-      query = connection.execute(
-        sql.text("SELECT mtime FROM cache WHERE path = :path"), path=str(path),
-      )
-      result = query.first()
-      if result:
-        cached_mtime = result[0]
-    # Skip a file that hasn't been modified since the last time it was
-    # formatted.
-    if mtime == cached_mtime:
-      return
-
-    # Get or create the formatter.
-    key = path.suffix or path.name
-    if key in self.formatters:
-      form = self.formatters[key]
-    else:
-      form = formatters[key](self.cache_path)
-      self.formatters[key] = form
-
-    return form(path, cached_mtime)
-=======
         elif FLAGS.with_cache:
           # TODO: Run as a single query.
           mtime = int(os.path.getmtime(path) * 1e6)
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
