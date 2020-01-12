@@ -1,51 +1,8 @@
-# Tests for formatters.
-
-py_test(
-    name = "bazel_test",
-    srcs = ["bazel_test.py"],
-    deps = [
-        ":testing",
-        "//labm8/py:test",
-        "//tools/format/formatters:bazel",
-    ],
-)
-
-py_test(
-    name = "cxx_test",
-    srcs = ["cxx_test.py"],
-    deps = [
-        ":testing",
-        "//labm8/py:test",
-        "//tools/format/formatters:cxx",
-    ],
-)
-
-py_test(
-    name = "go_test",
-    srcs = ["go_test.py"],
-    deps = [
-        ":testing",
-        "//labm8/py:test",
-        "//tools/format/formatters:go",
-    ],
-)
-
-py_test(
-    name = "sql_test",
-    srcs = ["sql_test.py"],
-    deps = [
-        ":testing",
-        "//labm8/py:test",
-        "//tools/format/formatters:sql",
-    ],
-)
-
 py_library(
     name = "testing",
     testonly = 1,
     srcs = ["testing.py"],
     deps = [
-        "//labm8/py:fs",
         "//tools/format:formatter",
     ],
 )
@@ -55,6 +12,7 @@ py_test(
     srcs = ["text_test.py"],
     deps = [
         ":testing",
+        "//labm8/py:fs",
         "//labm8/py:test",
         "//tools/format/formatters:text",
     ],
