@@ -6,32 +6,16 @@ macos: brew install buildifier
 # For linting C++ files.
 linux: sudo apt install -y --no-install-recommends clang-format
 macos: brew install clang-format
-<<<<<<< HEAD:tools/format/DEPS.txt
-=======
 # For linting Python files.
 all: python3 -m pip install 'black-2spaces'
 all: python3 -m pip install reorder-python-imports
-# For linting SQL files.
-<<<<<<< HEAD:tools/format/DEPS.txt
-<<<<<<< HEAD:tools/format/DEPS.txt
-all: pip install sqlparse
->>>>>>> e1411d33f... Auto-format SQL files on checkin.:tools/code_style/linters/DEPS.txt
-=======
-all: python -m pip install sqlparse
->>>>>>> ebf2d3c01... Fix pip invocation.:tools/code_style/linters/DEPS.txt
-=======
-all: python3 -m pip install sqlparse
->>>>>>> c802834df... Use python3 binaries.:tools/code_style/linters/DEPS.txt
 # For linting Protobuf files.
 linux: go get github.com/uber/prototool/cmd/prototool
 macos: brew install prototool
 # For linting HTML+CSS+JS files.
 all: npm install -g js-beautify
-<<<<<<< HEAD:tools/format/DEPS.txt
+# For linting JSON files.
+all: npm install -g jsonlint
 # For linting bash scripts.
 linux: wget https://github.com/mvdan/sh/releases/download/v2.6.4/shfmt_v2.6.4_linux_386 -O $HOME/.local/bin/shfmt && chmod +x $HOME/.local/bin/shfmt
 macos: wget https://github.com/mvdan/sh/releases/download/v2.6.4/shfmt_v2.6.4_darwin_386 -O $HOME/.local/bin/shfmt && chmod +x $HOME/.local/bin/shfmt
-=======
-# For linting JSON files.
-all: npm install -g jsonlint
->>>>>>> 6764ea5d3... Lint JSON files on commit.:tools/code_style/linters/DEPS.txt
