@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Unit tests for //tools/format/formatters:text."""
+import pathlib
+
 from labm8.py import test
 from tools.format.formatters import text
 from tools.format.formatters.tests import testing
@@ -19,23 +21,13 @@ from tools.format.formatters.tests import testing
 FLAGS = test.FLAGS
 
 
-<<<<<<< HEAD:tools/format/formatters/tests/text_test.py
-def test_strip_trailing_whitespace():
+def test_strip_trailing_whitespace(tempdir: pathlib.Path):
   assert testing.FormatText(text.FormatText, "Hello   \n") == "Hello\n"
 
 
-def test_add_newline():
+def test_add_newline(tempdir: pathlib.Path):
   assert testing.FormatText(text.FormatText, "Hello") == "Hello\n"
 
 
-=======
-def test_Exec_smoke_test():
-  """llvm-link with an empty file."""
-  p = llvm_dis.Exec(["-help"])
-  assert not p.returncode
-  assert "USAGE: llvm-dis" in p.stdout
-
-
->>>>>>> 4242aed2a... Automated code format.:compilers/llvm/llvm_dis_test.py
 if __name__ == "__main__":
   test.Main()
