@@ -39,10 +39,7 @@ cat << EOF
 seconds_since_epoch: $BUILD_TIMESTAMP
 host: "$STABLE_HOST"
 user: "$STABLE_USER"
-<<<<<<< HEAD:make_build_info_pbtxt.sh
 version: "$STABLE_VERSION"
-=======
->>>>>>> 996b7e72c... Move config and build_info to top level package.:make_build_info_pbtxt.sh
 repo_dirty: $STABLE_GIT_REPO_DIRTY
 git_commit: "$STABLE_GIT_COMMIT_HASH"
 git_branch: "$STABLE_GIT_BRANCH"
