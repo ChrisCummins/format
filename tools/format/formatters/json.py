@@ -13,14 +13,14 @@
 # limitations under the License.
 """This module defines a formatter for JSON files."""
 from tools.format import formatter
-import json
 
-class FormatJson(formatter.Formatter):
+
+class FormatJson(formatter.BatchedFormatter):
   """Format JSON files."""
 
-  def RunOne(self, path):
-    with open(path, "r+") as f:
-      data = json.load(f)
-      f.seek(0)
-      json.dump(data, f, indent=2, sort_keys=True)
-      f.write('\n')
+  def __init__(self, *args, **kwargs):
+    super(FormatJson, self).__init__(*args, **kwargs)
+    self.jsonlint = formatter.WhichOrDie("jsonlint")
+
+  def RunMany(self, paths):
+    return formatter.ExecOrError([self.jsonlint, "-i"] + paths)
