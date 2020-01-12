@@ -23,14 +23,6 @@ Features:
 
   * Automated code styling of C/C++, Python, Java, SQL, JavaScript, HTML,
     CSS, go, and JSON files.
-  * Support for `.formatignore` files to mark files to be excluded from
-    formatting. The syntax of ignore files is similar to `.gitignore`, e.g. a
-    list of patterns to match, including (recursive) glob expansion, and
-    patterns beginning with `!` are un-ignored.
-  * A `--pre_commit` mode which formats files that have been staged for commit,
-    and stages changes. The commit is rejected if a partially-staged file is
-    modified. Enforce the use of pre-commit mode (and add a "Signed off" footer
-    to commits) by running `--install_pre_commit_hook`.
   * Persistent caching of "last modified" timestamps for files to minimize the
     amount of work done.
   * A process lock which prevents races when multiple formatters are launched
@@ -58,8 +50,7 @@ import fasteners
 import build_info
 from labm8.py import app
 from tools.format import formatter_executor
-from tools.format import git_util
-from tools.format import path_generator as path_generators
+from tools.format import path_generator
 from tools.format.formatters.suffix_mapping import mapping as formatters
 
 
@@ -76,28 +67,6 @@ app.DEFINE_boolean(
   "Print the list of filename suffixes which are formatted and return.",
 )
 app.DEFINE_boolean(
-  "dry_run",
-  False,
-  "Only print the paths of files that will be formatted, without formatting "
-  "them.",
-)
-app.DEFINE_boolean(
-  "pre_commit",
-  False,
-  "Run formatter in pre-commit mode. When in pre-commit mode, all files that "
-  "are staged for commit are formatted. If a formatter modifies a file that "
-  "was staged for commit, the new changes are automatically staged. If a file "
-  "was only partially staged for commit, then this program exits with a "
-  "non-zero returncode, requiring you to review the formatter's changes "
-  "before re-running the commit.",
-)
-app.DEFINE_boolean(
-  "install_pre_commit_hook",
-  False,
-  "Install a pre-commit hook for the current git repository that runs this "
-  "program.",
-)
-app.DEFINE_boolean(
   "with_cache",
   True,
   'Enable the persistent caching of "last modified" timestamps for files. '
@@ -105,6 +74,40 @@ app.DEFINE_boolean(
   "skipped. Running the formatter with --nowith_cache forces all files to be "
   "formatted, even if they have not changed.",
 )
+
+
+def FormatPaths(cache_dir: pathlib.Path, paths: Iterable[pathlib.Path]) -> bool:
+  """Run formatter on an iterable sequence of paths.
+
+  Args:
+    cache_dir: The path of the persistent cache directory.
+    paths: An iterator of paths to format. All paths are assumed to (a) be
+      files, and (b) exist. Duplicates are okay.
+
+  Returns:
+    True if there were errors.
+  """
+  q = queue.Queue()
+  executor = formatter_executor.FormatterExecutor(cache_dir, q)
+  executor.start()
+
+  visited = set()
+  for path in paths:
+    if path in visited:
+      continue
+
+    # Check if there are corresponding formatters, and if so, send it off to
+    # the executor to process.
+    key = path.suffix or path.name
+    if key in formatters:
+      q.put(path)
+
+    visited.add(path)
+
+  q.put(None)
+  executor.join()
+
+  return executor.errors
 
 
 def GetCacheDir() -> pathlib.Path:
@@ -120,6 +123,9 @@ def GetCacheDir() -> pathlib.Path:
 
 
 def Main(argv):
+  if not argv:
+    raise app.UsageError("Must provide a path")
+
   cache_dir = GetCacheDir()
   cache_dir.mkdir(parents=True, exist_ok=True)
 
@@ -129,107 +135,16 @@ def Main(argv):
   elif FLAGS.print_suffixes:
     print("\n".join(sorted(formatters.keys())))
     return
-  elif FLAGS.install_pre_commit_hook:
-    git_util.InstallPreCommitHookOrDie(cache_dir)
-    return
 
   # Acquire an inter-process lock. This does not need to be released - cleanup
   # of inter-process locks using the fasteners library is automatic. This will
   # block indefinitely if the lock is already acquired by a different process,
   # ensuring that only a single formatter is running at a time.
-  lock_file = cache_dir / "LOCK"
-  app.Log(3, "Acquiring lock file %s", lock_file)
-  assert fasteners.InterProcessLock(lock_file)
-  app.Log(3, "Lock file acquired")
+  assert fasteners.InterProcessLock(cache_dir / "LOCK")
 
-  args = argv[1:]
-  path_generator = path_generators.PathGenerator(".formatignore")
-
-  # Resolve the paths to format.
-  if FLAGS.pre_commit:
-    if args:
-      raise app.UsageError("--pre_commit takes no arguments")
-
-    # In --pre_commit mode, we take the union of staged and partially-staged
-    # files to format.
-    staged_paths, partially_staged_paths = git_util.GetStagedPathsOrDie(
-      path_generator
-    )
-
-    paths = set(staged_paths).union(set(partially_staged_paths))
-  elif not args:
-    raise app.UsageError("Must provide a path")
-  else:
-    paths = path_generator.GeneratePaths(args)
-
-  executor = FormatPathsOrDie(cache_dir, paths)
-
-  if FLAGS.pre_commit and executor.modified_files:
-    # When in --pre_commit mode, a non-zero status means that staged files were
-    # modified.
-    modified_files = set(executor.modified_files)
-
-    need_review = modified_files.intersection(set(partially_staged_paths))
-    to_commit = modified_files - need_review
-
-    if to_commit:
-      print("✅  Modified files that will be automatically committed:")
-      for path in sorted(to_commit):
-        print("   ", path)
-      git_util.GitAddOrDie(to_commit)
-
-    if need_review:
-      print(
-        "⚠️  Partially staged modified files that must be inspected:",
-        file=sys.stderr,
-      )
-
-      for path in sorted(need_review):
-        print("   ", path, file=sys.stderr)
-      print("[action] Selectively add unstaged changes using:", file=sys.stderr)
-      print("    git add --patch --", *need_review, file=sys.stderr)
-      sys.exit(1)
-
-
-def PathsWithFormatters(
-  paths: Iterable[pathlib.Path],
-) -> Iterable[pathlib.Path]:
-  """Filter an iterable of paths for those with corresponding formatters."""
-  for path in paths:
-    key = path.suffix or path.name
-    if key in formatters:
-      yield path
-
-
-def FormatPathsOrDie(cache_dir: pathlib.Path, paths: List[pathlib.Path]):
-  """Run the formatter on a list of arguments.
-
-  Returns:
-    The formatter executor.
-  """
-  q = queue.Queue()
-  executor = formatter_executor.FormatterExecutor(cache_dir, q)
-
-  paths = PathsWithFormatters(paths)
-
-  # --dry_run flag to print the paths that would be formatted.
-  if FLAGS.dry_run:
-    for path in paths:
-      print(path)
-    return executor
-
-  executor.start()
-
-  for path in paths:
-    q.put(path)
-
-  q.put(None)
-  executor.join()
-
-  if executor.errors:
-    sys.exit(2)
-
-  return executor
+  paths = path_generator.GeneratePaths(argv[1:])
+  errors = FormatPaths(cache_dir, paths)
+  sys.exit(1 if errors else 0)
 
 
 if __name__ == "__main__":

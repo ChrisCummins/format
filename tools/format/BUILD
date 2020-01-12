@@ -14,35 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("//tools/bzl:exports.bzl", "exports_repo")
-load("@com_github_chriscummins_rules_bats//:bats.bzl", "bats_test")
 load("@subpar//:subpar.bzl", "par_binary")
-
-exports_files([
-    "LICENSE",
-    "README.md",
-    "CNAME",
-])
-
-exports_repo(
-    name = "export",
-    github_repo = "format",
-    move_file_mapping = {
-        "tools/format/README.md": "README.md",
-        "tools/format/LICENSE": "LICENSE",
-        "tools/format/travis.yml": ".travis.yml",
-    },
-    targets = ["//tools/format/..."],
-)
-
-py_library(
-    name = "formatter",
-    srcs = ["formatter.py"],
-    visibility = ["//tools/format/formatters:__subpackages__"],
-    deps = [
-        "//labm8/py:app",
-    ],
-)
 
 py_library(
     name = "formatter_executor",
@@ -62,7 +34,6 @@ par_binary(
     srcs = ["format.py"],
     deps = [
         ":formatter_executor",
-        ":git_util",
         ":path_generator",
         "//:build_info",
         "//labm8/py:app",
@@ -72,47 +43,10 @@ par_binary(
     ],
 )
 
-bats_test(
-    name = "format_par_test",
-    srcs = ["format_par_test.bats"],
-    data = [
-        ":format.par",
-        "//labm8/sh:test",
-    ],
-)
-
-py_library(
-    name = "git_util",
-    srcs = ["git_util.py"],
-    deps = [
-        "//:build_info",
-        "//labm8/py:app",
-    ],
-)
-
-sh_binary(
-    name = "install",
-    srcs = ["install.sh"],
-    data = [":format.par"],
-    deps = [
-        "//labm8/sh:app",
-    ],
-)
-
 py_library(
     name = "path_generator",
     srcs = ["path_generator.py"],
     deps = [
         "//labm8/py:app",
-    ],
-)
-
-py_test(
-    name = "path_generator_test",
-    srcs = ["path_generator_test.py"],
-    deps = [
-        ":path_generator",
-        "//labm8/py:fs",
-        "//labm8/py:test",
     ],
 )

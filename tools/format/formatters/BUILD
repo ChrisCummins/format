@@ -17,50 +17,32 @@
 py_library(
     name = "bazel",
     srcs = ["bazel.py"],
-    data = [
-        "@com_github_bazelbuild_buildtools//buildifier",
-    ],
-    visibility = ["//tools/format/formatters:__subpackages__"],
     deps = [
-        "//labm8/py:bazelutil",
-        "//tools/format:formatter",
+        ":formatter",
     ],
 )
 
 py_library(
     name = "cxx",
     srcs = ["cxx.py"],
-    data = select({
-        "//:darwin": [
-            "@llvm_mac//:clang-format",
-        ],
-        "//conditions:default": [
-            "@llvm_linux//:clang-format",
-        ],
-    }),
-    visibility = ["//tools/format/formatters:__subpackages__"],
     deps = [
-        "//labm8/py:bazelutil",
-        "//labm8/py:system",
-        "//tools/format:formatter",
+        ":formatter",
+    ],
+)
+
+py_library(
+    name = "formatter",
+    srcs = ["formatter.py"],
+    deps = [
+        "//labm8/py:app",
     ],
 )
 
 py_library(
     name = "go",
     srcs = ["go.py"],
-    data = select({
-        "//:darwin": [
-            "@go_mac//:gofmt",
-        ],
-        "//conditions:default": [
-            "@go_linux//:gofmt",
-        ],
-    }),
-    visibility = ["//tools/format/formatters:__subpackages__"],
     deps = [
-        "//labm8/py:bazelutil",
-        "//tools/format:formatter",
+        ":formatter",
     ],
 )
 
@@ -68,48 +50,41 @@ py_library(
     name = "java",
     srcs = ["java.py"],
     data = ["//third_party/java:google_java_format_jar"],
-    visibility = ["//tools/format/formatters:__subpackages__"],
     deps = [
+        ":formatter",
         "//labm8/py:bazelutil",
-        "//tools/format:formatter",
     ],
 )
 
 py_library(
     name = "javascript",
     srcs = ["javascript.py"],
-    visibility = ["//tools/format/formatters:__subpackages__"],
     deps = [
-        "//labm8/py:fs",
-        "//tools/format:formatter",
+        ":formatter",
     ],
 )
 
 py_library(
     name = "json",
     srcs = ["json.py"],
-    visibility = ["//tools/format/formatters:__subpackages__"],
     deps = [
-        "//tools/format:formatter",
+        ":formatter",
     ],
 )
 
 py_library(
     name = "python",
     srcs = ["python.py"],
-    visibility = ["//tools/format/formatters:__subpackages__"],
     deps = [
-        "//tools/format:formatter",
+        ":formatter",
     ],
 )
 
 py_library(
     name = "sql",
     srcs = ["sql.py"],
-    visibility = ["//tools/format/formatters:__subpackages__"],
     deps = [
-        "//third_party/py/sqlparse",
-        "//tools/format:formatter",
+        ":formatter",
     ],
 )
 
@@ -126,16 +101,6 @@ py_library(
         ":json",
         ":python",
         ":sql",
-        ":text",
         "//labm8/py:app",
-    ],
-)
-
-py_library(
-    name = "text",
-    srcs = ["text.py"],
-    visibility = ["//tools/format/formatters:__subpackages__"],
-    deps = [
-        "//tools/format:formatter",
     ],
 )
