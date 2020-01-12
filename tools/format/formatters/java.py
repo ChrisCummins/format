@@ -13,11 +13,7 @@
 # limitations under the License.
 """This module defines a formatter for java sources."""
 from labm8.py import bazelutil
-<<<<<<< HEAD
 from tools.format import formatter
-=======
-from tools.format.formatters import formatter
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 
 
 class FormatJava(formatter.BatchedFormatter):
@@ -27,11 +23,6 @@ class FormatJava(formatter.BatchedFormatter):
     super(FormatJava, self).__init__(*args, **kwargs)
     self.java = formatter.WhichOrDie("java")
 
-<<<<<<< HEAD
-    self.google_java_format = bazelutil.DataPath(
-      "phd/third_party/java/google-java-format-1.7-all-deps.jar"
-    )
-=======
     # Unpack the jarfile to the local cache. We do this rather than accessing
     # the data file directly since a par build embeds the data inside the
     # package. See: github.com/google/subpar/issues/43
@@ -44,7 +35,6 @@ class FormatJava(formatter.BatchedFormatter):
       )
       with open(self.google_java_format, "wb") as f:
         f.write(jar)
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 
   def RunMany(self, paths):
     return formatter.ExecOrError(

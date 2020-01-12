@@ -12,17 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """This module defines a formatter for Python sources."""
-<<<<<<< HEAD
-import io
-import sys
-
-import black
-import reorder_python_imports
-from click.testing import CliRunner
 from tools.format import formatter
-=======
-from tools.format.formatters import formatter
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 
 
 class FormatPython(formatter.BatchedFormatter):
@@ -30,38 +20,6 @@ class FormatPython(formatter.BatchedFormatter):
 
   def __init__(self, *args, **kwargs):
     super(FormatPython, self).__init__(*args, **kwargs)
-<<<<<<< HEAD
-
-    # Replicate functionality of black.patched_main().
-    black.patch_click()
-
-    # Create a runner for the black command line.
-    self.black_runner = CliRunner()
-
-  def RunMany(self, paths):
-    str_paths = [str(x) for x in paths]
-
-    # Invoke black.
-    result = self.black_runner.invoke(
-      black.main, ["--line-length=80", "--target-version=py37"] + str_paths
-    )
-    if result.exit_code:
-      return result.output
-
-    # Run reorder-python-imports.
-    old_stdout, old_stderr = sys.stdout, sys.stderr
-
-    sys.stdout = io.StringIO()
-    sys.stderr = sys.stdout
-    try:
-      ret = reorder_python_imports.main(
-        ["--exit-zero-even-if-changed"] + str_paths
-      )
-      if ret:
-        return sys.stdout.getvalue()
-    finally:
-      sys.stdout, sys.stderr = old_stdout, old_stderr
-=======
     self.black = formatter.WhichOrDie("black")
     self.reorder_python_imports = formatter.WhichOrDie("reorder-python-imports")
 
@@ -74,4 +32,3 @@ class FormatPython(formatter.BatchedFormatter):
     return formatter.ExecOrError(
       [self.reorder_python_imports, "--exit-zero-even-if-changed"] + paths
     )
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.

@@ -12,14 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """This module defines a formatter for SQL sources."""
-<<<<<<< HEAD
-import sqlparse
-
-from labm8.py import fs
 from tools.format import formatter
-=======
-from tools.format.formatters import formatter
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
 
 
 class FormatSql(formatter.Formatter):
@@ -30,19 +23,6 @@ class FormatSql(formatter.Formatter):
     self.sqlformat = formatter.WhichOrDie("sqlformat")
 
   def RunOne(self, path):
-<<<<<<< HEAD
-    try:
-      formatted = (
-        sqlparse.format(
-          fs.Read(path), reindent=True, keyword_case="upper"
-        ).rstrip()
-        + "\n"
-      )
-    except:
-      return f"sqlparse failed for: {path}"
-
-    fs.Write(path, formatted.encode("utf-8"))
-=======
     return formatter.ExecOrError(
       [
         self.sqlformat,
@@ -56,4 +36,3 @@ class FormatSql(formatter.Formatter):
         path,
       ]
     )
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.

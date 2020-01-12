@@ -17,72 +17,27 @@
 py_library(
     name = "bazel",
     srcs = ["bazel.py"],
-<<<<<<< HEAD
-    data = [
-        "@com_github_bazelbuild_buildtools//buildifier",
-    ],
     visibility = ["//tools/format/formatters:__subpackages__"],
     deps = [
-        "//labm8/py:bazelutil",
         "//tools/format:formatter",
-=======
-    deps = [
-        ":formatter",
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
     ],
 )
 
 py_library(
     name = "cxx",
     srcs = ["cxx.py"],
-<<<<<<< HEAD
-    data = select({
-        "//:darwin": [
-            "@llvm_mac//:clang-format",
-        ],
-        "//conditions:default": [
-            "@llvm_linux//:clang-format",
-        ],
-    }),
     visibility = ["//tools/format/formatters:__subpackages__"],
     deps = [
-        "//labm8/py:bazelutil",
         "//tools/format:formatter",
-=======
-    deps = [
-        ":formatter",
-    ],
-)
-
-py_library(
-    name = "formatter",
-    srcs = ["formatter.py"],
-    deps = [
-        "//labm8/py:app",
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
     ],
 )
 
 py_library(
     name = "go",
     srcs = ["go.py"],
-<<<<<<< HEAD
-    data = select({
-        "//:darwin": [
-            "@go_mac//:gofmt",
-        ],
-        "//conditions:default": [
-            "@go_linux//:gofmt",
-        ],
-    }),
     visibility = ["//tools/format/formatters:__subpackages__"],
     deps = [
-        "//labm8/py:bazelutil",
         "//tools/format:formatter",
-=======
-    deps = [
-        ":formatter",
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
     ],
 )
 
@@ -90,94 +45,46 @@ py_library(
     name = "java",
     srcs = ["java.py"],
     data = ["//third_party/java:google_java_format_jar"],
-<<<<<<< HEAD
     visibility = ["//tools/format/formatters:__subpackages__"],
     deps = [
         "//labm8/py:bazelutil",
         "//tools/format:formatter",
-=======
-    deps = [
-        ":formatter",
-        "//labm8/py:bazelutil",
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
     ],
 )
 
 py_library(
     name = "javascript",
     srcs = ["javascript.py"],
-<<<<<<< HEAD
     visibility = ["//tools/format/formatters:__subpackages__"],
     deps = [
-        "//labm8/py:fs",
         "//tools/format:formatter",
-=======
-    deps = [
-        ":formatter",
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
     ],
 )
 
 py_library(
     name = "json",
     srcs = ["json.py"],
-<<<<<<< HEAD
     visibility = ["//tools/format/formatters:__subpackages__"],
     deps = [
         "//tools/format:formatter",
-=======
-    deps = [
-        ":formatter",
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
     ],
 )
 
 py_library(
     name = "python",
     srcs = ["python.py"],
-<<<<<<< HEAD
     visibility = ["//tools/format/formatters:__subpackages__"],
     deps = [
-        "//third_party/py/reorder_python_imports",
         "//tools/format:formatter",
-        "@black2-spaces//:black",
-    ],
-)
-
-py_library(
-    name = "shell",
-    srcs = ["shell.py"],
-    data = select({
-        "//:darwin": [
-            "@shfmt_mac//file",
-        ],
-        "//conditions:default": [
-            "@shfmt_linux//file",
-        ],
-    }),
-    visibility = ["//tools/format/formatters:__subpackages__"],
-    deps = [
-        "//labm8/py:bazelutil",
-        "//tools/format:formatter",
-=======
-    deps = [
-        ":formatter",
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
     ],
 )
 
 py_library(
     name = "sql",
     srcs = ["sql.py"],
-<<<<<<< HEAD
     visibility = ["//tools/format/formatters:__subpackages__"],
     deps = [
-        "//third_party/py/sqlparse",
         "//tools/format:formatter",
-=======
-    deps = [
-        ":formatter",
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
     ],
 )
 
@@ -193,8 +100,6 @@ py_library(
         ":javascript",
         ":json",
         ":python",
-<<<<<<< HEAD
-        ":shell",
         ":sql",
         ":text",
         "//labm8/py:app",
@@ -209,9 +114,3 @@ py_library(
         "//tools/format:formatter",
     ],
 )
-=======
-        ":sql",
-        "//labm8/py:app",
-    ],
-)
->>>>>>> 10fbb15c0... Begin implementation of new formatter framework.
