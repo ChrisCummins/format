@@ -20,7 +20,7 @@ FLAGS = test.FLAGS
 
 
 def test_small_shell_program():
-  """Test pre-processing a small shell program."""
+  """Test pre-processing a small C++ program."""
   formatted = testing.FormatText(
     shell.FormatShell,
     """
@@ -36,28 +36,6 @@ foo() {
 foo() {
   echo hello
   ls
-}
-"""
-  )
-
-
-def test_small_bats_program():
-  """Test pre-processing a small bats program."""
-  formatted = testing.FormatText(
-    shell.FormatShell,
-    """
-@test "run version" {
-    "$BIN"  --version
-}
-""",
-    filename="test.bats",
-  )
-  print(formatted)
-  assert (
-    formatted
-    == """\
-@test "run version" {
-  "$BIN" --version
 }
 """
   )
