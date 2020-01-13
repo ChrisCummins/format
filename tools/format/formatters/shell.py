@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """This module defines a formatter for shell (i.e. bash, bats) sources."""
+import os
 import sys
 
 from labm8.py import bazelutil
@@ -23,25 +24,17 @@ class FormatShell(formatter.BatchedFormatter):
 
   def __init__(self, *args, **kwargs):
     super(FormatShell, self).__init__(*args, **kwargs)
-    arch = "darwin" if sys.platform == "darwin" else "linux"
-    self.shfmt = bazelutil.DataPath(f"shfmt_{arch}/file/shfmt")
+
+    # Unpack shfmt.
+    self.shfmt = self.cache_path / "shfmt"
+    if not self.shfmt.is_file():
+      if sys.platform == "darwin":
+        shfmt = bazelutil.DataString("shfmt_mac/file/shfmt")
+      else:
+        shfmt = bazelutil.DataString("shfmt_linux/file/shfmt")
+      with open(self.shfmt, "wb") as f:
+        f.write(shfmt)
+      os.chmod(self.shfmt, 0o744)
 
   def RunMany(self, paths):
-    # To enable shfmt to parse bats tests we must insert a newline before the
-    # opening brace.
-    # See https://www.gitmemory.com/issue/bats-core/bats-core/192/528315083
-    bats_paths = [p for p in paths if p.suffix == '.bats']
-    if bats_paths:
-      error = formatter.ExecOrError(["perl", "-pi", "-e" ,'s/^(\@test.*) \{$/$1\n{/'] + bats_paths)
-      if error:
-        return error
-
-    error = formatter.ExecOrError([self.shfmt, "-i", "2", "-ci", "-w"] + paths)
-    if error:
-      return error
-
-    # Reverse the temporary reformatting of bats tests.
-    if bats_paths:
-      error = formatter.ExecOrError(["perl", "-pi", "-e", 's/^\{\R//; s/(\@test.*$)/$1 {/'] + bats_paths)
-      if error:
-        return error
+    return formatter.ExecOrError([self.shfmt, "-i", "2", "-ci", "-w"] + paths)
