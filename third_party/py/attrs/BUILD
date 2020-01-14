@@ -7,6 +7,7 @@ package(default_visibility = ["//visibility:public"])
 licenses(["notice"])  # BSD
 
 py_library(
+<<<<<<< HEAD
 <<<<<<< HEAD:third_party/py/attrs/BUILD
     name = "attrs",
 =======
@@ -30,5 +31,11 @@ py_library(
 =======
         "//third_party/py/jinja2",
 >>>>>>> 575a2237e... Add implicit deps to jupyter package.:third_party/py/jupyter/BUILD
+=======
+    name = "attrs",
+    srcs = ["//third_party/py:empty.py"],
+    deps = [
+        requirement("attrs"),
+>>>>>>> 4903bd176... Pull in black sources directly.
     ],
 )

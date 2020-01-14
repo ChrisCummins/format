@@ -30,7 +30,7 @@ py_library(
 >>>>>>> 0aae7e3cf... Make implicit dep explicit.:third_party/py/flask/BUILD
 =======
         requirement("jinja2"),
-        requirement("Click"),
+        "//third_party/py/click",
         requirement("itsdangerous"),
         requirement("chardet"),
         requirement("certifi"),
