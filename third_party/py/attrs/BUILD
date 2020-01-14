@@ -8,6 +8,7 @@ licenses(["notice"])  # BSD
 
 py_library(
 <<<<<<< HEAD
+<<<<<<< HEAD
 <<<<<<< HEAD:third_party/py/attrs/BUILD
     name = "attrs",
 =======
@@ -37,5 +38,11 @@ py_library(
     deps = [
         requirement("attrs"),
 >>>>>>> 4903bd176... Pull in black sources directly.
+=======
+    name = "attrs",
+    srcs = ["//third_party/py:empty.py"],
+    deps = [
+        requirement("attrs"),
+>>>>>>> ae6822afa... Pull in black sources directly.
     ],
 )
