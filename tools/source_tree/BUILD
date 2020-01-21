@@ -14,28 +14,6 @@ exports_repo(
     targets = ["//tools/source_tree:export_source_tree"],
 )
 
-py_library(
-    name = "conftest",
-    testonly = 1,
-    srcs = ["conftest.py"],
-    deps = [
-        "//labm8/py:fs",
-        "//labm8/py:test",
-        "//third_party/py/git",
-        "//third_party/py/pytest",
-    ],
-)
-
-py_test(
-    name = "conftest_test",
-    srcs = ["conftest_test.py"],
-    deps = [
-        ":conftest",
-        "//labm8/py:test",
-        "//third_party/py/git",
-    ],
-)
-
 par_binary(
     name = "deploy_pip",
     srcs = ["deploy_pip.py"],
