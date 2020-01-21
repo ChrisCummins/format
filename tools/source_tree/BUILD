@@ -54,6 +54,7 @@ py_library(
         "//labm8/py:fs",
         "//labm8/py:humanize",
         "//third_party/py/git",
+        "//tools/git:export_subtree",
     ],
 )
 
