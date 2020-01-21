@@ -82,6 +82,8 @@ class SubtreeExporter(progress.Progress):
         ):
           self.exported_commit_count += 1
 
+      self.ctx.i = self.ctx.n  # done
+
 
 def GetCommitsInOrder(
   repo: git.Repo, head_ref: str = "HEAD", tail_ref: Optional[str] = None
